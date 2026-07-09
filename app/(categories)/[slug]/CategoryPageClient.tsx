@@ -1,0 +1,220 @@
+"use client";
+
+import { useEffect, useState, useRef } from "react";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import ProductCard from "../../components/products/ProductCard";
+import type { Product } from "../../components/products/types";
+import { slugConfigs } from "../../lib/categoryConfig";
+import { IoChevronBack, IoChevronForward, IoHomeOutline } from "react-icons/io5";
+import { HiOutlineSparkles } from "react-icons/hi2";
+import { BsGrid3X3GapFill } from "react-icons/bs";
+
+const normalizeAr = (s: string) =>
+  s.trim().toLowerCase().replace(/[أإآٱ]/g, "ا").replace(/[ؤ]/g, "و").replace(/[ئ]/g, "ي").replace(/ة/g, "ه").replace(/\s+/g, " ");
+
+function filterProducts(products: Product[], slug: string): Product[] {
+  const config = slugConfigs[slug];
+  if (!config) return products;
+  const { brand, category, nameIncludes } = config.filters;
+  return products.filter((p) => {
+    const matchBrand = brand ? p.brand?.toLowerCase() === brand.toLowerCase() : true;
+    const matchCategory = category ? normalizeAr(p.category ?? "") === normalizeAr(category) : false;
+    const matchName = nameIncludes?.length
+      ? nameIncludes.some((kw) => normalizeAr(p.name ?? "").includes(normalizeAr(kw)))
+      : false;
+    if (nameIncludes?.length && category) return (matchBrand && matchName) || matchCategory;
+    if (nameIncludes?.length) return matchBrand && matchName;
+    if (category) return matchCategory;
+    return matchBrand;
+  });
+}
+
+
+
+export default function CategoryPageClient({ slug }: { slug: string }) {
+  const config = slugConfigs[slug];
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const ITEMS_PER_PAGE = 12;
+
+  useEffect(() => {
+    if (!config) return;
+    const brand = config.filters.brand ?? "";
+    const query = brand ? `?brand=${encodeURIComponent(brand)}` : "";
+    fetch(`/api/products${query}`)
+      .then((r) => r.json())
+      .then((data: Product[]) => {
+        const filtered = filterProducts(data, slug);
+        const parseStorage = (s?: string) => {
+          if (!s) return 0;
+          const n = parseFloat(s);
+          if (s.includes("تيرا") || s.toLowerCase().includes("tb")) return n * 1024;
+          return n || 0;
+        };
+        const colorOrder = (c?: string) => {
+          if (!c) return 99;
+          if (c.includes("برتقال") || c.toLowerCase().includes("orange")) return 0;
+          if (c.includes("سيلفر") || c.toLowerCase().includes("silver")) return 1;
+          if (c.includes("ازرق") || c.includes("أزرق") || c.toLowerCase().includes("blue")) return 2;
+          return 3;
+        };
+        const sorted = [...filtered].sort((a, b) => {
+          const storageDiff = parseStorage(a.storage) - parseStorage(b.storage);
+          if (storageDiff !== 0) return storageDiff;
+          return colorOrder(a.color) - colorOrder(b.color);
+        });
+        setProducts(sorted);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, [slug, config]);
+
+  if (!config) return notFound();
+
+  const label = config.label ?? slug;
+  const parentLabel = config.parentLabel ?? "";
+  const parentHref = config.parentHref ?? "/";
+  const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
+  const currentProducts = products.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+
+  const goToPage = (n: number) => {
+    setPage(n);
+    gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  return (
+    <main className="min-h-screen cat-page-bg" dir="rtl">
+      {/* ═══ HERO ═══ */}
+      <div className="cat-hero relative overflow-hidden">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+          <div className="flex flex-wrap items-center gap-2 text-[11px] sm:text-sm pt-5 sm:pt-8 mb-5 sm:mb-8">
+            <Link href="/" className="cat-breadcrumb-pill">
+              <IoHomeOutline size={13} />
+              الرئيسية
+            </Link>
+            <IoChevronBack size={11} className="text-white/30" />
+            <Link href={parentHref} className="cat-breadcrumb-pill">{parentLabel}</Link>
+            <IoChevronBack size={11} className="text-white/30" />
+            <span className="cat-breadcrumb-pill cat-breadcrumb-active">{label}</span>
+          </div>
+
+          <div className="pb-12 sm:pb-16">
+            <div className="flex items-start gap-3.5 sm:gap-4">
+              <div className="cat-icon-box">
+                <HiOutlineSparkles className="text-[#7CC043] text-xl sm:text-2xl" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h1 className="text-2xl sm:text-4xl font-black text-white leading-tight tracking-tight">{label}</h1>
+                <p className="text-white/50 text-xs sm:text-sm mt-1.5 font-medium">اكتشف أفضل المنتجات بأسعار لا تُقاوم</p>
+              </div>
+              {!loading && products.length > 0 && (
+                <div className="cat-count-badge">
+                  <span className="text-lg sm:text-xl font-black">{products.length}</span>
+                  <span className="text-[10px] sm:text-xs opacity-70">منتج</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1440 60" fill="none" className="w-full h-auto" preserveAspectRatio="none">
+            <path d="M0 60V30C180 10 360 0 540 10C720 20 900 45 1080 45C1260 45 1350 30 1440 20V60H0Z" fill="#f7fafb" />
+            <path d="M0 60V40C200 20 400 15 600 25C800 35 1000 50 1200 45C1320 42 1380 35 1440 30V60H0Z" fill="#f0f5f7" fillOpacity="0.5" />
+          </svg>
+        </div>
+      </div>
+
+      {/* ═══ CONTENT ═══ */}
+      <div ref={gridRef} className="max-w-6xl mx-auto px-3 sm:px-6 py-5 sm:py-10 scroll-mt-4">
+        {loading ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="cat-skeleton-card rounded-2xl overflow-hidden">
+                <div className="aspect-square cat-shimmer" />
+                <div className="p-3.5 space-y-3">
+                  <div className="h-3.5 rounded-full w-[80%] cat-shimmer" />
+                  <div className="h-3 rounded-full w-[55%] cat-shimmer" />
+                  <div className="h-9 rounded-xl cat-shimmer mt-2" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : !products.length ? (
+          <div className="flex flex-col items-center justify-center py-20 sm:py-32 gap-5 text-center">
+            <div className="cat-empty-icon">
+              <span className="text-5xl">📦</span>
+            </div>
+            <div>
+              <p className="text-gray-700 text-lg sm:text-xl font-extrabold mb-1.5">المنتجات ستُضاف قريباً</p>
+              <p className="text-gray-400 text-sm max-w-xs mx-auto leading-relaxed">هذا القسم قيد التحضير، تابعنا للمزيد من المنتجات المميزة</p>
+            </div>
+            <Link href="/" className="cat-back-btn">
+              <IoHomeOutline size={16} />
+              العودة للرئيسية
+            </Link>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center justify-between mb-5 sm:mb-8">
+              <div className="cat-toolbar-badge">
+                <BsGrid3X3GapFill className="text-[#1F6F8B]" size={14} />
+                <span className="text-sm font-extrabold text-[#0a3550]">{products.length}</span>
+                <span className="text-[11px] text-gray-400 font-medium">منتج متوفر</span>
+              </div>
+              {totalPages > 1 && (
+                <div className="cat-page-indicator">
+                  <span className="text-[11px] text-gray-400">صفحة</span>
+                  <span className="text-sm font-bold text-[#0F4C6E]">{page}</span>
+                  <span className="text-[11px] text-gray-400">من {totalPages}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
+              {currentProducts.map((p) => (
+                <ProductCard key={p._id} product={p} />
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <div className="cat-pagination">
+                <button
+                  onClick={() => goToPage(Math.max(1, page - 1))}
+                  disabled={page === 1}
+                  className="cat-pg-arrow"
+                >
+                  <IoChevronForward size={18} />
+                </button>
+                <div className="flex items-center gap-1.5">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+                    <button
+                      key={n}
+                      onClick={() => goToPage(n)}
+                      className={`cat-pg-num ${page === n ? "active" : ""}`}
+                    >
+                      {page === n && (
+                        <div className="absolute inset-0 cat-pg-active-bg rounded-xl" />
+                      )}
+                      <span className="relative z-10">{n}</span>
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={() => goToPage(Math.min(totalPages, page + 1))}
+                  disabled={page === totalPages}
+                  className="cat-pg-arrow"
+                >
+                  <IoChevronBack size={18} />
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </main>
+  );
+}
