@@ -82,13 +82,14 @@ export default function ContractPage() {
     @media print {
       @page { size: A4; margin: 10mm; }
       html, body { margin: 0; padding: 0; background: #fff !important; }
-      img[alt="header"], img[alt="footer"] { width: 100% !important; max-height: none !important; }
+      .contract-container { max-width: 100% !important; padding: 0 !important; }
+      img[alt="header"], img[alt="footer"] { width: 100% !important; max-width: 100% !important; max-height: none !important; display: block; }
     }
   `;
 
 
   return (
-    <div style={{ fontFamily: "Arial, sans-serif", padding: 24, maxWidth: 900, margin: "0 auto", direction: "rtl", backgroundColor: "#fff", minHeight: "100vh", color: "#000" }}>
+    <div className="contract-container" style={{ fontFamily: "Arial, sans-serif", padding: 24, maxWidth: 900, margin: "0 auto", direction: "rtl", backgroundColor: "#fff", minHeight: "100vh", color: "#000" }}>
       <style>{style}</style>
 
       {company.header && <img src={company.header} alt="header" style={{ width: "100%", marginBottom: 24 }} />}
