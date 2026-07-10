@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { Package, Clock, Ban, XCircle, MessageCircle, FileText, CheckCircle, RotateCcw } from "lucide-react";
 import ContactSection from "../components/ContactSection";
 
-function useInView(threshold = 0.12) {
+function useInView(threshold = 0.1) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -18,183 +19,175 @@ function useInView(threshold = 0.12) {
   return { ref, visible };
 }
 
-function FadeUp({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+function Reveal({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
   const { ref, visible } = useInView();
   return (
-    <div ref={ref} style={{
+    <div ref={ref} className={className} style={{
       opacity: visible ? 1 : 0,
-      transform: visible ? "translateY(0) scale(1)" : "translateY(28px) scale(0.98)",
-      transition: `opacity 0.65s cubic-bezier(.22,1,.36,1) ${delay}ms, transform 0.65s cubic-bezier(.22,1,.36,1) ${delay}ms`,
+      transform: visible ? "translateY(0)" : "translateY(32px)",
+      transition: `all 0.7s cubic-bezier(.16,1,.3,1) ${delay}ms`,
     }}>
       {children}
     </div>
   );
 }
 
-/* ── Icons ── */
-const IconBox = () => (
-  <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" stroke="currentColor" strokeWidth={1.8}>
-    <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" strokeLinecap="round" strokeLinejoin="round"/>
-    <polyline points="3.27 6.96 12 12.01 20.73 6.96" strokeLinecap="round" strokeLinejoin="round"/>
-    <line x1="12" y1="22.08" x2="12" y2="12" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
-const IconClock = () => (
-  <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" stroke="currentColor" strokeWidth={1.8}>
-    <circle cx="12" cy="12" r="10"/>
-    <polyline points="12 6 12 12 16 14" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
-const IconBan = () => (
-  <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" stroke="currentColor" strokeWidth={1.8}>
-    <circle cx="12" cy="12" r="10"/>
-    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" strokeLinecap="round"/>
-  </svg>
-);
-const IconXCircle = () => (
-  <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" stroke="currentColor" strokeWidth={1.8}>
-    <circle cx="12" cy="12" r="10"/>
-    <line x1="15" y1="9" x2="9" y2="15" strokeLinecap="round"/>
-    <line x1="9" y1="9" x2="15" y2="15" strokeLinecap="round"/>
-  </svg>
-);
-
-const sections = [
+/* ── Data ── */
+const policies = [
   {
-    Icon: IconBox,
+    Icon: Package,
     title: "حالة المنتج",
-    gradient: "from-[#0F4C6E] to-[#1F6F8B]",
-    bg: "bg-[#E6F2F8]",
-    iconText: "text-[#0F4C6E]",
-    content: [
-      "يشترط أن يكون المنتج في حالته الأصلية وغير مستخدم، مع الحفاظ على التغليف والملحقات والفاتورة إن وجدت.",
-    ],
+    color: "from-[#0F4C6E] to-[#1F6F8B]",
+    content: "يشترط أن يكون المنتج في حالته الأصلية وغير مستخدم، مع الحفاظ على التغليف والملحقات والفاتورة إن وجدت.",
   },
   {
-    Icon: IconClock,
+    Icon: Clock,
     title: "مدة طلب الاسترجاع",
-    gradient: "from-[#0a3550] to-[#0F4C6E]",
-    bg: "bg-[#ddeef7]",
-    iconText: "text-[#0a3550]",
-    content: [
-      "يتم تقديم طلبات الاستبدال أو الاسترجاع خلال المدة المحددة حسب سياسة المتجر، وبعد مراجعة حالة الطلب والمنتج.",
-    ],
+    color: "from-[#1F6F8B] to-[#0a3550]",
+    content: "يتم تقديم طلبات الاستبدال أو الاسترجاع خلال المدة المحددة حسب سياسة المتجر، وبعد مراجعة حالة الطلب والمنتج.",
   },
   {
-    Icon: IconBan,
+    Icon: Ban,
     title: "المنتجات غير القابلة للاسترجاع",
-    gradient: "from-[#1F6F8B] to-[#0a3550]",
-    bg: "bg-[#ddeef7]",
-    iconText: "text-[#1F6F8B]",
-    content: [
-      "بعض المنتجات قد لا تكون قابلة للاسترجاع أو الاستبدال بعد فتحها أو استخدامها، وخاصة المنتجات الشخصية أو الرقمية أو التي تم تجهيزها بطلب خاص.",
-    ],
+    color: "from-[#0a3550] to-[#0F4C6E]",
+    content: "بعض المنتجات قد لا تكون قابلة للاسترجاع أو الاستبدال بعد فتحها أو استخدامها، وخاصة المنتجات الشخصية أو الرقمية أو التي تم تجهيزها بطلب خاص.",
   },
   {
-    Icon: IconXCircle,
+    Icon: XCircle,
     title: "إلغاء الطلبات",
-    gradient: "from-[#7CC043] to-[#5a9030]",
-    bg: "bg-[#eaf5d8]",
-    iconText: "text-[#5a9030]",
-    content: [
-      "يمكن إلغاء الطلب قبل التجهيز أو الشحن، أما إذا تم شحن الطلب فيتم التعامل معه وفق سياسة الاسترجاع المعتمدة.",
-    ],
+    color: "from-[#7CC043] to-[#5a9030]",
+    content: "يمكن إلغاء الطلب قبل التجهيز أو الشحن، أما إذا تم شحن الطلب فيتم التعامل معه وفق سياسة الاسترجاع المعتمدة.",
   },
+];
+
+const steps = [
+  { Icon: MessageCircle, text: "تواصل معنا عبر الواتساب أو البريد" },
+  { Icon: FileText, text: "أرسل رقم الطلب وسبب الاسترجاع" },
+  { Icon: CheckCircle, text: "انتظر موافقة الفريق خلال ٢٤ ساعة" },
+  { Icon: RotateCcw, text: "أعد المنتج بحالته الأصلية واستلم المبلغ" },
 ];
 
 type Company = { whatsapp?: string; email?: string; phone?: string };
 
 export default function ReturnPolicyClient() {
-  const [heroVisible, setHeroVisible] = useState(false);
+  const [heroReady, setHeroReady] = useState(false);
   const [company, setCompany] = useState<Company | null>(null);
 
-  useEffect(() => { const t = setTimeout(() => setHeroVisible(true), 60); return () => clearTimeout(t); }, []);
+  useEffect(() => { setTimeout(() => setHeroReady(true), 80); }, []);
   useEffect(() => {
-    fetch("/api/admin/company").then((r) => r.json()).then(setCompany).catch(() => {});
+    fetch("/api/admin/company").then(r => r.json()).then(setCompany).catch(() => {});
   }, []);
 
-  const anim = (delay: number) => ({
-    style: {
-      opacity: heroVisible ? 1 : 0,
-      transform: heroVisible ? "translateY(0)" : "translateY(22px)",
-      transition: `opacity 0.7s cubic-bezier(.22,1,.36,1) ${delay}ms, transform 0.7s cubic-bezier(.22,1,.36,1) ${delay}ms`,
-    },
-  } as React.HTMLAttributes<HTMLElement>);
-
   return (
-    <main className="min-h-screen bg-[#E6F2F8] overflow-x-hidden" dir="rtl">
+    <main className="min-h-screen bg-[#f0f7fb] overflow-x-hidden" dir="rtl">
 
       {/* ════════ HERO ════════ */}
-      <section className="relative w-full overflow-hidden" style={{ background: 'linear-gradient(to bottom left, #0a3550, #0F4C6E, #1F6F8B)' }}>
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full bg-white/5 blur-[80px]" />
-          <div className="absolute top-10 left-10 w-64 h-64 rounded-full bg-indigo-300/10 blur-[60px]" />
-          <div className="absolute bottom-0 left-1/2 w-[600px] h-40 -translate-x-1/2 bg-blue-900/30 blur-[50px]" />
+      <section className="relative min-h-[380px] sm:min-h-[460px] flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0" style={{ background: "conic-gradient(from 160deg at 30% 70%, #0a3550, #0F4C6E, #1F6F8B, #0F4C6E, #0a3550)" }} />
+
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute top-[15%] left-[10%] w-56 h-56 border border-white/[0.08] rounded-3xl rotate-12" style={{ animation: "spin 30s linear infinite" }} />
+          <div className="absolute bottom-[20%] right-[8%] w-40 h-40 border border-white/[0.06] rounded-full" style={{ animation: "spin 20s linear infinite reverse" }} />
+          <div className="absolute top-[30%] right-[25%] w-3 h-3 bg-[#7CC043] rounded-full opacity-50" style={{ animation: "pulse 2.5s ease-in-out infinite" }} />
+          <div className="absolute bottom-[40%] left-[30%] w-2 h-2 bg-[#B8D8EC] rounded-full opacity-40" style={{ animation: "pulse 3s ease-in-out infinite 1s" }} />
+          <div className="absolute inset-0 opacity-[0.025]" style={{ backgroundImage: "repeating-linear-gradient(-45deg, #fff 0, #fff 1px, transparent 1px, transparent 28px)" }} />
         </div>
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.04]"
-          style={{ backgroundImage: "linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)", backgroundSize: "40px 40px" }}
-        />
-        <div className="relative w-full px-5 sm:px-12 lg:px-20 py-20 sm:py-32 text-center text-white">
-          <div {...anim(100)} className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 text-xs sm:text-sm font-medium text-blue-100 mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#7CC043] animate-pulse" />
-            الشروط والسياسات
+
+        <div className="relative z-10 text-center px-6 py-20">
+          <div style={{ opacity: heroReady ? 1 : 0, transform: heroReady ? "scale(1)" : "scale(0.9)", transition: "all 0.9s cubic-bezier(.16,1,.3,1) 100ms" }}>
+            <div className="inline-flex items-center gap-2 bg-white/[0.08] backdrop-blur-md border border-white/20 rounded-full px-5 py-2 text-xs sm:text-sm text-[#B8D8EC] mb-8">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7CC043] opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#7CC043]" />
+              </span>
+              الشروط والسياسات
+            </div>
           </div>
-          <h1 {...anim(220)} className="text-3xl sm:text-5xl lg:text-6xl font-extrabold mb-4 sm:mb-5 leading-tight tracking-tight">
+
+          <h1 style={{ opacity: heroReady ? 1 : 0, transform: heroReady ? "translateY(0)" : "translateY(30px)", transition: "all 0.9s cubic-bezier(.16,1,.3,1) 250ms" }}
+            className="text-3xl sm:text-5xl lg:text-6xl font-black text-white mb-4 leading-[1.2]">
             سياسة الاستبدال
-            <span className="block text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(to left, #B8D8EC, #ffffff)' }}>
-              والاسترجاع
-            </span>
+            <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-l from-[#B8D8EC] via-white to-[#7CC043]">والاسترجاع</span>
           </h1>
-          <p {...anim(360)} className="text-[#B8D8EC]/90 text-base sm:text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed">
-            الشروط المنظمة لطلبات الإلغاء والاستبدال والاسترجاع داخل مؤسسة تبارك التقنية الذكية
+
+          <p style={{ opacity: heroReady ? 1 : 0, transform: heroReady ? "translateY(0)" : "translateY(20px)", transition: "all 0.8s cubic-bezier(.16,1,.3,1) 450ms" }}
+            className="text-[#B8D8EC]/80 text-sm sm:text-base lg:text-lg max-w-xl mx-auto leading-relaxed mt-4">
+            نحرص على حقوقك — تعرّف على شروط الاسترجاع والاستبدال
           </p>
         </div>
+
         <div className="absolute bottom-0 left-0 w-full">
-          <svg viewBox="0 0 1440 70" className="w-full h-12 sm:h-16" preserveAspectRatio="none">
-            <path d="M0,35 C240,70 480,0 720,35 C960,70 1200,0 1440,35 L1440,70 L0,70 Z" fill="#E6F2F8" />
+          <svg viewBox="0 0 1440 80" className="w-full h-14 sm:h-20" preserveAspectRatio="none">
+            <path d="M0,40 C480,80 960,0 1440,50 L1440,80 L0,80 Z" fill="#f0f7fb" />
           </svg>
         </div>
       </section>
 
-      {/* ════════ SECTIONS ════════ */}
-      <section className="w-full max-w-4xl mx-auto px-4 sm:px-8 lg:px-10 py-8 sm:py-10 space-y-4 sm:space-y-5">
-        {sections.map((s, i) => (
-          <FadeUp key={s.title} delay={i * 100}>
-            <div className="group bg-white rounded-2xl sm:rounded-3xl border border-[#B8D8EC] shadow-sm overflow-hidden hover:shadow-md transition-all duration-300">
-              <div className="flex flex-col sm:flex-row">
-                <div className={`w-full h-1.5 sm:w-1.5 sm:h-auto bg-linear-to-r sm:bg-linear-to-b ${s.gradient} shrink-0`} />
-                <div className="flex-1 p-4 sm:p-7">
+      {/* ════════ POLICY CARDS ════════ */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-8 -mt-4 sm:-mt-6 relative z-20 pb-14">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+          {policies.map((p, i) => (
+            <Reveal key={p.title} delay={i * 100}>
+              <div className="group h-full bg-white rounded-2xl sm:rounded-3xl border border-[#B8D8EC]/30 shadow-sm hover:shadow-xl hover:shadow-[#0F4C6E]/5 hover:-translate-y-1 transition-all duration-500 overflow-hidden">
+                <div className={`h-1.5 w-full bg-gradient-to-l ${p.color}`} />
+                <div className="p-5 sm:p-7">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl ${s.bg} ${s.iconText} flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300`}>
-                      <s.Icon />
+                    <div className={`w-11 h-11 sm:w-13 sm:h-13 rounded-xl sm:rounded-2xl bg-gradient-to-br ${p.color} flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
+                      <p.Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" strokeWidth={2} />
                     </div>
-                    <div>
-                      <h2 className="text-base sm:text-xl font-extrabold text-gray-800">{s.title}</h2>
-                      <div className={`h-0.5 w-8 mt-1 rounded-full bg-linear-to-l ${s.gradient}`} />
-                    </div>
+                    <h2 className="text-[15px] sm:text-lg font-bold text-[#0a3550]">{p.title}</h2>
                   </div>
-                  <div className="space-y-2">
-                    {s.content.map((p, j) => (
-                      <p key={j} className="text-gray-600 leading-relaxed text-sm sm:text-base">{p}</p>
-                    ))}
-                  </div>
+                  <p className="text-gray-600 leading-[1.85] text-[13px] sm:text-[15px]">{p.content}</p>
                 </div>
               </div>
-            </div>
-          </FadeUp>
-        ))}
+            </Reveal>
+          ))}
+        </div>
+      </section>
 
+      {/* ════════ STEPS ════════ */}
+      <Reveal>
+        <section className="max-w-4xl mx-auto px-4 sm:px-8 pb-14">
+          <div className="relative rounded-3xl overflow-hidden" style={{ background: "linear-gradient(135deg, #0a3550 0%, #0F4C6E 50%, #1F6F8B 100%)" }}>
+            <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)", backgroundSize: "20px 20px" }} />
+            <div className="relative p-7 sm:p-12">
+              <h3 className="text-xl sm:text-2xl font-black text-white text-center mb-2">خطوات الاسترجاع</h3>
+              <p className="text-[#B8D8EC]/60 text-xs sm:text-sm text-center mb-8">اتبع الخطوات التالية لإتمام طلب الاسترجاع</p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {steps.map((s, i) => (
+                  <div key={i} className="relative bg-white/[0.07] backdrop-blur-sm border border-white/10 rounded-2xl p-5 text-center hover:bg-white/[0.12] transition-colors duration-300">
+                    {/* Step number */}
+                    <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-[#7CC043] flex items-center justify-center text-white text-xs font-black shadow-md">
+                      {i + 1}
+                    </div>
+                    <div className="w-11 h-11 mx-auto mb-3 rounded-xl bg-white/10 flex items-center justify-center">
+                      <s.Icon className="w-5 h-5 text-[#B8D8EC]" strokeWidth={2} />
+                    </div>
+                    <p className="text-white/90 text-[13px] sm:text-sm font-medium leading-relaxed">{s.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      </Reveal>
+
+      {/* ════════ CONTACT ════════ */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-8 pb-16">
         <ContactSection
           title="التواصل بخصوص الطلبات"
           phone={company?.phone}
           whatsapp={company?.whatsapp}
           email={company?.email}
-          fadeDelay={400}
+          fadeDelay={200}
         />
       </section>
 
-      <div className="h-16" />
+      <style jsx global>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      `}</style>
     </main>
   );
 }

@@ -7,8 +7,8 @@ import AnimatedBackground from "./components/AnimatedBackground";
 
 export const dynamic = "force-dynamic";
 
-const BACKEND = process.env.BACKEND_URL || "https://tabaraktech.com/api/tabarak";
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.tabraktech.com/";
+const BACKEND = process.env.BACKEND_URL || "https://backend-burj-production.up.railway.app";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://burj-almubdia.com";
 
 async function getCompany() {
   try {
@@ -21,7 +21,7 @@ async function getCompany() {
 
 export default async function Home() {
   const c = await getCompany();
-  const siteName = c.nameAr || "مؤسسة تبارك التقنية الذكية";
+  const siteName = c.nameAr || "برج المبدع للتقنية";
   const logoUrl = c.logo
     ? (c.logo.startsWith("http") ? c.logo : `${BACKEND}${c.logo}`)
     : "";
@@ -30,7 +30,7 @@ export default async function Home() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: siteName,
-    alternateName: c.nameEn || "Tabarak Tech",
+    alternateName: c.nameEn || "Burj Al-Mubdia Tech",
     url: SITE_URL,
     logo: logoUrl,
     contactPoint: [
