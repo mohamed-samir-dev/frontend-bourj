@@ -4,8 +4,8 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { IoAddCircle, IoRemoveCircle, IoTrashOutline } from "react-icons/io5";
 
-const SAR = ({ className = "inline-block w-4 h-4" }: { className?: string }) => (
-  <Image src="/money-icon.webp" alt="ر.س" width={30} height={30} className={className} />
+const SAR = () => (
+  <Image src="/money-icon.webp" alt="ر.س" width={27} height={27} className="inline-block w-[27px] h-[27px]" />
 );
 
 const fmt = (n: number) => n.toLocaleString("ar-SA");
@@ -58,7 +58,7 @@ export default function CartItem({ product, qty, index, onUpdateQty, onRemove }:
         <div>
           <h3 className="text-sm sm:text-[15px] font-bold text-gray-800 leading-snug line-clamp-2">{product.name}</h3>
           <p className="text-[13px] sm:text-sm font-extrabold text-[#7A2FCC] mt-1.5">
-            {fmt(price)} <span className="text-[11px] font-medium text-gray-400"><SAR className="inline-block w-3.5 h-3.5" /></span>
+            {fmt(price)} <span className="text-[11px] font-medium text-gray-400"><SAR /></span>
           </p>
         </div>
 
@@ -77,7 +77,7 @@ export default function CartItem({ product, qty, index, onUpdateQty, onRemove }:
           {/* Line Total */}
           <div className="text-left">
             <p className="text-xs text-gray-400">الإجمالي</p>
-            <p className="text-sm font-extrabold text-[#611FA0]">{fmt(lineTotal)} <span className="text-[10px] text-gray-400 font-medium"><SAR className="inline-block w-3 h-3" /></span></p>
+            <p className="text-sm font-extrabold text-[#611FA0]">{fmt(lineTotal)} <span className="text-[10px] text-gray-400 font-medium"><SAR /></span></p>
           </div>
         </div>
       </div>

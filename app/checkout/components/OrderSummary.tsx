@@ -4,8 +4,8 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { IoReceiptOutline, IoRocketOutline, IoWalletOutline } from "react-icons/io5";
 
-const SAR = ({ className = "inline-block w-4 h-4" }: { className?: string }) => (
-  <Image src="/money-icon.webp" alt="ر.س" width={30} height={30} className={className} />
+const SAR = () => (
+  <Image src="/money-icon.webp" alt="ر.س" width={27} height={27} className="inline-block w-[27px] h-[27px]" />
 );
 
 const fmt = (n: number) => n.toLocaleString("en-US");
@@ -38,13 +38,13 @@ export default function OrderSummary({ total, downPayment }: { total: number; do
         <div className="space-y-2 sm:space-y-3">
           <div className="flex justify-between items-center">
             <span className="text-xs sm:text-sm text-white/50 font-medium">مجموع السلة</span>
-            <span className="text-xs sm:text-sm font-bold">{fmt(total)} <span className="text-[10px] sm:text-xs text-white/40"><SAR className="inline-block w-3 h-3" /></span></span>
+            <span className="text-xs sm:text-sm font-bold">{fmt(total)} <span className="text-[10px] sm:text-xs text-white/40"><SAR /></span></span>
           </div>
 
           {downPayment > 0 && (
             <div className="flex justify-between items-center">
               <span className="text-xs sm:text-sm text-white/50 font-medium">الدفعة الأولى</span>
-              <span className="text-xs sm:text-sm font-bold text-[#A842E4]">{fmt(downPayment)} <span className="text-[10px] sm:text-xs text-white/40"><SAR className="inline-block w-3 h-3" /></span></span>
+              <span className="text-xs sm:text-sm font-bold text-[#A842E4]">{fmt(downPayment)} <span className="text-[10px] sm:text-xs text-white/40"><SAR /></span></span>
             </div>
           )}
 
@@ -66,7 +66,7 @@ export default function OrderSummary({ total, downPayment }: { total: number; do
             </div>
             <div className="text-left">
               <span className="text-lg sm:text-2xl font-extrabold">{fmt(isPaying)}</span>
-              <span className="text-[10px] sm:text-xs text-white/40 mr-1"><SAR className="inline-block w-3.5 h-3.5" /></span>
+              <span className="text-[10px] sm:text-xs text-white/40 mr-1"><SAR /></span>
             </div>
           </div>
         </div>

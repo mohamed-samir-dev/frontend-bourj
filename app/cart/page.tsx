@@ -11,8 +11,8 @@ import type { CustomerInfo } from "../store/cartStore";
 import CartItem from "./components/CartItem";
 import CustomerForm from "./components/CustomerForm";
 
-const SAR = ({ className = "inline-block w-4 h-4" }: { className?: string }) => (
-  <Image src="/money-icon.webp" alt="ر.س" width={30} height={30} className={className} />
+const SAR = () => (
+  <Image src="/money-icon.webp" alt="ر.س" width={27} height={27} className="inline-block w-[27px] h-[27px]" />
 );
 
 const fmt = (n: number) => n.toLocaleString("en-US");
@@ -71,7 +71,7 @@ export default function CartPage() {
           </div>
           <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-3.5 py-2 rounded-xl border border-white/10">
             <IoBagCheckOutline size={14} className="text-[#A842E4]" />
-            <span className="text-xs font-bold text-white">{fmt(total)} <SAR className="inline-block w-3.5 h-3.5" /></span>
+            <span className="text-xs font-bold text-white">{fmt(total)} <SAR /></span>
           </div>
         </div>
       </div>
@@ -98,7 +98,7 @@ export default function CartPage() {
               <div className="relative space-y-2 sm:space-y-3">
                 <div className="flex justify-between items-center text-xs sm:text-sm">
                   <span className="text-white/60 font-medium">المجموع</span>
-                  <span className="font-bold">{fmt(total)} <SAR className="inline-block w-3.5 h-3.5" /></span>
+                  <span className="font-bold">{fmt(total)} <SAR /></span>
                 </div>
                 <div className="flex justify-between items-center text-xs sm:text-sm">
                   <span className="text-white/60 font-medium">التوصيل</span>
@@ -108,7 +108,7 @@ export default function CartPage() {
                 </div>
                 <div className="border-t border-white/10 pt-2 sm:pt-3 flex justify-between items-center">
                   <span className="font-bold text-xs sm:text-sm">الإجمالي</span>
-                  <span className="text-lg sm:text-xl font-extrabold">{fmt(total)} <span className="text-[10px] sm:text-xs font-medium text-white/50"><SAR className="inline-block w-3.5 h-3.5" /></span></span>
+                  <span className="text-lg sm:text-xl font-extrabold">{fmt(total)} <SAR /></span>
                 </div>
               </div>
 
