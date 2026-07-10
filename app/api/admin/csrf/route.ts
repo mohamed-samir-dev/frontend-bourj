@@ -7,8 +7,14 @@ export async function GET(req: NextRequest) {
   });
   const data = await res.json().catch(() => ({}));
   const response = NextResponse.json(data, { status: res.status });
-  // Forward the csrf_token cookie from backend to browser
-  const setCookie = res.headers.get("set-cookie");
-  if (setCookie) response.headers.set("set-cookie", setCookie);
+  // Set csrf_token cookie directly on the response for the browser
+  if (data.csrfToken) {
+    response.cookies.set("csrf_token", data.csrfToken, {
+      httpOnly: false,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+    });
+  }
   return response;
 }
