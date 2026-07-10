@@ -17,11 +17,10 @@ export default function PrintOrderPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch(`/api/admin/orders/${id}`).then((r) => r.json()),
-      fetch("/api/admin/company").then((r) => r.json()).catch(() => ({})),
-    ]).then(([o, c]) => {
-      setOrder(o);
-      setCompany(c);
+      fetch(`/api/invoice/${id}`).then((r) => r.json()),
+    ]).then(([d]) => {
+      setOrder(d.order);
+      setCompany(d.company || {});
     });
   }, [id]);
 
