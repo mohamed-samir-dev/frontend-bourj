@@ -38,7 +38,7 @@ export default function PrintOrderPage() {
     if (ready) setTimeout(() => window.print(), 500);
   }, [ready]);
 
-  if (!ready) return <div style={{ textAlign: "center", padding: 40 }}>جاري التحميل...</div>;
+  if (!ready || !order) return <div style={{ textAlign: "center", padding: 40 }}>جاري التحميل...</div>;
 
   const style = `
     html, body { background-color: white !important; background: white !important; }
@@ -89,7 +89,7 @@ export default function PrintOrderPage() {
         />
       )}
       <style>{style}</style>
-      {company.header && <img src={company.header} alt="header" style={{ width: "100%", marginBottom: 24 }} />}
+      {company.header && <img src={company.header} alt="header" style={{ width: "100%", minWidth: "100%", height: "auto", display: "block", marginBottom: 24 }} />}
 
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16, fontSize: 13, fontWeight: 600 }}>
         <span>{date}</span>

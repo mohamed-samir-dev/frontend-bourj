@@ -59,7 +59,7 @@ export default function ContractPage() {
     if (ready) setTimeout(() => window.print(), 500);
   }, [ready]);
 
-  if (!ready) return <div style={{ textAlign: "center", padding: 40 }}>جاري التحميل...</div>;
+  if (!ready || !data) return <div style={{ textAlign: "center", padding: 40 }}>جاري التحميل...</div>;
 
   const { order, company } = data;
   const currency = company.currencyAr || "ريال";
