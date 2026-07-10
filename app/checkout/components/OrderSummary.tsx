@@ -13,10 +13,10 @@ export default function OrderSummary({ total, downPayment }: { total: number; do
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
-      className="relative overflow-hidden bg-gradient-to-br from-[#0F4C6E] to-[#0a3550] rounded-xl sm:rounded-2xl p-3 sm:p-6 text-white shadow-[0_8px_30px_rgba(15,76,110,0.25)] max-w-md sm:max-w-none mx-auto sm:mx-0"
+      className="relative overflow-hidden bg-gradient-to-br from-[#090D54] via-[#611FA0] to-[#7A2FCC] rounded-xl sm:rounded-2xl p-3 sm:p-6 text-white shadow-[0_12px_40px_rgba(133,67,192,0.25)] max-w-md sm:max-w-none mx-auto sm:mx-0"
     >
       {/* Decorative circles */}
-      <div className="absolute -top-10 -left-10 w-32 h-32 bg-[#7CC043]/10 rounded-full blur-xl" />
+      <div className="absolute -top-10 -left-10 w-32 h-32 bg-[#A842E4]/20 rounded-full blur-xl" />
       <div className="absolute -bottom-8 -right-8 w-24 h-24 bg-white/5 rounded-full blur-lg" />
 
       <div className="relative space-y-2.5 sm:space-y-4">
@@ -39,7 +39,7 @@ export default function OrderSummary({ total, downPayment }: { total: number; do
           {downPayment > 0 && (
             <div className="flex justify-between items-center">
               <span className="text-xs sm:text-sm text-white/50 font-medium">الدفعة الأولى</span>
-              <span className="text-xs sm:text-sm font-bold text-[#7CC043]">{fmt(downPayment)} <span className="text-[10px] sm:text-xs text-white/40">ر.س</span></span>
+              <span className="text-xs sm:text-sm font-bold text-[#A842E4]">{fmt(downPayment)} <span className="text-[10px] sm:text-xs text-white/40">ر.س</span></span>
             </div>
           )}
 
@@ -48,7 +48,7 @@ export default function OrderSummary({ total, downPayment }: { total: number; do
               <IoRocketOutline size={13} />
               <span className="text-xs sm:text-sm font-medium">التوصيل</span>
             </div>
-            <span className="text-[10px] sm:text-xs font-bold text-[#7CC043] bg-[#7CC043]/10 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full">مجاني</span>
+            <span className="text-[10px] sm:text-xs font-bold text-[#A842E4] bg-[#A842E4]/10 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full">مجاني</span>
           </div>
         </div>
 
@@ -56,7 +56,7 @@ export default function OrderSummary({ total, downPayment }: { total: number; do
         <div className="pt-2 sm:pt-3 border-t border-white/10">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-1.5 sm:gap-2">
-              <IoWalletOutline size={16} className="text-[#7CC043]" />
+              <IoWalletOutline size={16} className="text-[#A842E4]" />
               <span className="font-bold text-xs sm:text-sm">المطلوب دفعه الآن</span>
             </div>
             <div className="text-left">

@@ -28,10 +28,10 @@ export default function CartPage() {
   /* ── Empty State ── */
   if (items.length === 0)
     return (
-      <main className="min-h-screen flex flex-col items-center justify-center gap-6 px-4 bg-gradient-to-b from-gray-50 to-white" dir="rtl">
+      <main className="min-h-screen flex flex-col items-center justify-center gap-6 px-4 bg-gradient-to-br from-[#f9f5ff] via-white to-[#f3eafc]" dir="rtl">
         <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 200 }}>
-          <div className="w-28 h-28 bg-gradient-to-br from-[#0F4C6E]/10 to-[#7CC043]/10 rounded-full flex items-center justify-center shadow-[0_8px_40px_rgba(15,76,110,0.1)]">
-            <IoCartOutline size={48} className="text-[#0F4C6E]/40" />
+          <div className="w-32 h-32 bg-gradient-to-br from-[#8543C0]/10 to-[#A842E4]/20 rounded-3xl rotate-6 flex items-center justify-center shadow-[0_20px_60px_rgba(133,67,192,0.15)]">
+            <IoCartOutline size={52} className="text-[#8543C0]/50 -rotate-6" />
           </div>
         </motion.div>
         <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="text-center">
@@ -42,7 +42,7 @@ export default function CartPage() {
           initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.35 }}
           whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
           onClick={() => router.push("/")}
-          className="bg-gradient-to-r from-[#0F4C6E] to-[#1a6b5a] text-white px-10 py-3.5 rounded-full font-bold text-sm shadow-[0_8px_30px_rgba(15,76,110,0.3)]"
+          className="bg-gradient-to-r from-[#7A2FCC] to-[#A842E4] text-white px-10 py-3.5 rounded-2xl font-bold text-sm shadow-[0_8px_30px_rgba(133,67,192,0.35)]"
         >
           تصفح المنتجات
         </motion.button>
@@ -51,27 +51,27 @@ export default function CartPage() {
 
   /* ── Cart with Items ── */
   return (
-    <main className="min-h-screen pb-8 bg-gradient-to-b from-gray-50/80 to-white" dir="rtl">
+    <main className="min-h-screen pb-8 bg-gradient-to-br from-[#f9f5ff] via-[#fdfcff] to-[#f3eafc]" dir="rtl">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-xl border-b border-gray-100">
-        <div className="w-full mx-auto px-4 sm:px-8 lg:px-12 py-3 flex items-center justify-between">
+      <div className="sticky top-0 z-20 bg-gradient-to-r from-[#090D54] via-[#611FA0] to-[#7A2FCC] shadow-[0_4px_20px_rgba(133,67,192,0.2)]">
+        <div className="w-full mx-auto px-4 sm:px-8 lg:px-12 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/" className="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
-              <IoChevronBack size={18} className="text-gray-600 rotate-180" />
+            <Link href="/" className="w-9 h-9 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/20 transition-colors border border-white/10">
+              <IoChevronBack size={18} className="text-white/80 rotate-180" />
             </Link>
             <div>
-              <h1 className="text-[15px] font-extrabold text-gray-800">سلة التسوق</h1>
-              <p className="text-[11px] text-gray-400 font-medium">{count} منتج</p>
+              <h1 className="text-[15px] font-extrabold text-white">سلة التسوق</h1>
+              <p className="text-[11px] text-white/50 font-medium">{count} منتج</p>
             </div>
           </div>
-          <div className="flex items-center gap-1.5 bg-[#0F4C6E]/5 px-3 py-1.5 rounded-full">
-            <IoBagCheckOutline size={14} className="text-[#0F4C6E]" />
-            <span className="text-xs font-bold text-[#0F4C6E]">{fmt(total)} ر.س</span>
+          <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-3.5 py-2 rounded-xl border border-white/10">
+            <IoBagCheckOutline size={14} className="text-[#A842E4]" />
+            <span className="text-xs font-bold text-white">{fmt(total)} ر.س</span>
           </div>
         </div>
       </div>
 
-      <div className="w-full mx-auto px-4 sm:px-8 lg:px-12 pt-5">
+      <div className="w-full mx-auto px-4 sm:px-8 lg:px-12 pt-6">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
           {/* Left Column - Cart Items */}
           <div className="lg:col-span-3 space-y-3">
@@ -86,16 +86,18 @@ export default function CartPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: items.length * 0.08 + 0.1 }}
-              className="bg-gradient-to-br from-[#0F4C6E] to-[#0a3550] rounded-xl sm:rounded-2xl p-3 sm:p-5 text-white shadow-[0_8px_30px_rgba(15,76,110,0.2)] max-w-md sm:max-w-none mx-auto sm:mx-0"
+              className="relative overflow-hidden bg-gradient-to-br from-[#090D54] via-[#611FA0] to-[#7A2FCC] rounded-xl sm:rounded-2xl p-3 sm:p-5 text-white shadow-[0_12px_40px_rgba(133,67,192,0.25)] max-w-md sm:max-w-none mx-auto sm:mx-0"
             >
-              <div className="space-y-2 sm:space-y-3">
+              <div className="absolute top-0 left-0 w-40 h-40 bg-[#A842E4]/20 rounded-full -translate-x-16 -translate-y-16 blur-2xl" />
+              <div className="absolute bottom-0 right-0 w-32 h-32 bg-[#8543C0]/20 rounded-full translate-x-10 translate-y-10 blur-2xl" />
+              <div className="relative space-y-2 sm:space-y-3">
                 <div className="flex justify-between items-center text-xs sm:text-sm">
                   <span className="text-white/60 font-medium">المجموع</span>
                   <span className="font-bold">{fmt(total)} ر.س</span>
                 </div>
                 <div className="flex justify-between items-center text-xs sm:text-sm">
                   <span className="text-white/60 font-medium">التوصيل</span>
-                  <span className="text-[#7CC043] font-bold text-[10px] sm:text-xs flex items-center gap-1">
+                  <span className="text-[#A842E4] font-bold text-[10px] sm:text-xs flex items-center gap-1">
                     <IoRocketOutline size={12} /> مجاني
                   </span>
                 </div>
@@ -106,7 +108,7 @@ export default function CartPage() {
               </div>
 
               {/* Trust Badges */}
-              <div className="mt-3 sm:mt-4 pt-2 sm:pt-3 border-t border-white/10 flex items-center justify-center gap-3 sm:gap-4">
+              <div className="relative mt-3 sm:mt-4 pt-2 sm:pt-3 border-t border-white/10 flex items-center justify-center gap-3 sm:gap-4">
                 <div className="flex items-center gap-1.5 text-white/40">
                   <IoShieldCheckmarkOutline size={14} />
                   <span className="text-[10px] font-medium">دفع آمن</span>
