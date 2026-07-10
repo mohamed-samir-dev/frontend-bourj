@@ -29,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const description = c.details || "برج المبدع  - أجهزة إلكترونية بالأقساط داخل المملكة العربية السعودية. أفضل الأسعار على الجوالات، اللابتوبات، الأجهزة اللوحية والإكسسوارات.";
 
   const logoUrl = c.logo
-    ? (c.logo.startsWith("http") ? c.logo : `${SITE_URL}/api/tabarak${c.logo}`)
+    ? (c.logo.startsWith("http") ? c.logo : `${SITE_URL}${c.logo}`)
     : `${SITE_URL}/web-app-manifest-512x512.png`;
 
   return {

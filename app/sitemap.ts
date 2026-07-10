@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 import { slugConfigs } from "./lib/categoryConfig";
 
 const BASE_URL = "https://burj-almubdia.com";
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "https://burj-almubdia.com/api/tabarak";
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "https://backend-burj-production.up.railway.app";
 
 const staticRoutes: { path: string; priority: number; changeFreq: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
   { path: "", priority: 1.0, changeFreq: "daily" },

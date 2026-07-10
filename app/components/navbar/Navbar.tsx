@@ -86,12 +86,12 @@ export default function Navbar() {
             >
               {mobileOpen ? <CloseIcon /> : <MenuIcon />}
             </button>
-            <Link href="/" className="shrink-0" aria-label="الصفحة الرئيسية - مؤسسة تبارك التقنية الذكية">
+            <Link href="/" className="shrink-0" aria-label="الصفحة الرئيسية - برج المبدع للتقنية">
               {logo && (
                 <Image
                   src={logo}
                   unoptimized
-                  alt="مؤسسة تبارك التقنية الذكية"
+                  alt="برج المبدع للتقنية"
                   width={0}
                   height={0}
                   sizes="100vw"

@@ -66,7 +66,7 @@ export default async function Footer() {
               من نحن
             </h3>
             <p className="text-sm leading-7 text-gray-400">
-              {c.details || "مؤسسة تبارك التقنية الذكية هي اختيارك الأول لشراء أجهزتك بالأقساط داخل السعودية، ضمان موثوق وخدمة محلية."}
+              {c.details || "برج المبدع للتقنية هي اختيارك الأول لشراء أجهزتك بالأقساط داخل السعودية، ضمان موثوق وخدمة محلية."}
             </p>
           </div>
 
@@ -78,7 +78,7 @@ export default async function Footer() {
             </h3>
             <ul className="space-y-3 text-sm">
               {[
-                { label: "عن مؤسسة تبارك التقنية الذكية", href: "/about" },
+                { label: "عن برج المبدع للتقنية", href: "/about" },
                 { label: "طرق الدفع", href: "/payment" },
                 { label: "سياسة الاستبدال والاسترجاع", href: "/return-policy" },
                 { label: "سياسة الخصوصية واتفاقية الاستخدام", href: "/privacy" },
@@ -178,7 +178,7 @@ export default async function Footer() {
         <div className="relative border-t border-white/5">
           <div className="max-w-6xl mx-auto px-4 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
             <span className="text-xs text-gray-500">
-              جميع الحقوق محفوظة © {new Date().getFullYear()} مؤسسة تبارك التقنية الذكية
+              جميع الحقوق محفوظة © {new Date().getFullYear()} برج المبدع للتقنية
             </span>
             <Image src="/فيزا ماستر مدى.webp" alt="Visa Mastercard Mada" width={120} height={35} className="object-contain opacity-70 hover:opacity-100 transition-opacity" style={{ width: "auto" }} />
           </div>
