@@ -38,7 +38,7 @@ export const categoryHeroImages: Record<string, string> = {
   "samsung-galaxy-s26-ultra": "/heroes/samsung-galaxy-s26-ultra.webp",
   "samsung-galaxy-s26-plus": "/heroes/samsung-galaxy-s26-plus.webp",
   // Apple Watches
-  se: "/heroes/apple-watch.webp",
+  se: "se.webp",
   "smart-watches": "/heroes/smart-watches.webp",
   // Audio
   "airpods-pro": "/heroes/airpods-pro.webp",
