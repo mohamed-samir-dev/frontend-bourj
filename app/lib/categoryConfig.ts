@@ -51,10 +51,10 @@ export const categoryHeroImages: Record<string, string> = {
   controllers: "/heroes/controllers.webp",
   // Laptops
   "macbook-pro": "/heroes/macbook-pro.webp",
-  "macbook-air": "/heroes/macbook-air.webp",
+  "macbook-air": "/mac.webp",
   // Tablets
   "ipad-pro": "/heroes/ipad-pro.webp",
-  "ipad-air": "/heroes/ipad-air.webp",
+  "ipad-air": "/ip.webp",
 };
 
 export const slugConfigs: Record<string, SlugConfig> = {
