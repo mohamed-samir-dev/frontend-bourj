@@ -8,8 +8,17 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     fetch(`${BACKEND}/api/checkout/${id}/public`),
     fetch(`${BACKEND}/api/admin/company`),
   ]);
-  if (!orderRes.ok) return NextResponse.json({ error: "not found" }, { status: 404 });
-  const order = await orderRes.json();
+  // Fallback: if public route not available yet, try fetching from orders list
+  let order;
+  if (orderRes.ok) {
+    order = await orderRes.json();
+  } else {
+    const allRes = await fetch(`${BACKEND}/api/admin/orders`);
+    if (!allRes.ok) return NextResponse.json({ error: "not found" }, { status: 404 });
+    const all = await allRes.json();
+    order = all.find((o: { _id: string }) => o._id === id);
+    if (!order) return NextResponse.json({ error: "not found" }, { status: 404 });
+  }
   const company = await companyRes.json();
   return NextResponse.json({ order, company });
 }
