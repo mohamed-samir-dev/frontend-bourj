@@ -50,7 +50,7 @@ export default function ReceiptPrintPage() {
   const amount = order.installmentType === "installment" ? order.downPayment : order.total;
   const amountWords = toArabicWords(amount) + " فقط لا غير";
   const aboutPrefix = `قيمة ${order.installmentType === "installment" ? "دفعة من " : ""}ثمن جهاز/أجهزة:`;
-  const aboutItems = order.items.map((i: OrderItem) => i.name);
+  const aboutItems = (order.items || []).map((i: OrderItem) => i.name);
 
   const style = `
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
