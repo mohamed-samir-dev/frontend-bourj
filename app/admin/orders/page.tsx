@@ -38,7 +38,12 @@ export default function OrdersPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; name: string } | null>(null);
+  const [csrfToken, setCsrfToken] = useState("");
   const perPage = 10;
+
+  useEffect(() => {
+    fetch("/api/admin/csrf").then(r => r.json()).then(d => setCsrfToken(d.csrfToken || "")).catch(() => {});
+  }, []);
 
   useEffect(() => {
     const load = () =>
@@ -62,7 +67,7 @@ export default function OrdersPage() {
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
   async function deleteOrder(id: string) {
-    const res = await fetch(`/api/admin/orders/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/admin/orders/${id}`, { method: "DELETE", headers: { "x-csrf-token": csrfToken } });
     if (res.ok) {
       setOrders((prev) => prev.filter((o) => o._id !== id));
       toast.success("تم حذف الطلب ✅");
@@ -73,7 +78,7 @@ export default function OrdersPage() {
   async function changeStatus(id: string, status: string) {
     const res = await fetch(`/api/admin/orders/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "x-csrf-token": csrfToken },
       body: JSON.stringify({ status }),
     });
     if (res.ok) {
