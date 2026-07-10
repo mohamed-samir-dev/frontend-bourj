@@ -42,6 +42,7 @@ export default function ReceiptPage() {
   }, [data]);
 
   if (!data) return <div style={{ textAlign: "center", padding: 40 }}>جاري التحميل...</div>;
+  if (!data.order?.items) return <div style={{ textAlign: "center", padding: 40 }}>لم يتم العثور على الطلب</div>;
 
   const { order, company } = data;
   const currency = company.currencyAr || "ريال";
