@@ -14,6 +14,7 @@ export default function PrintOrderPage() {
   const { id } = useParams<{ id: string }>();
   const [order, setOrder] = useState<Order | null>(null);
   const [company, setCompany] = useState<Company>({});
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -22,14 +23,22 @@ export default function PrintOrderPage() {
     ]).then(([o, c]) => {
       setOrder(o);
       setCompany(c);
+      const imgs = [c.header, c.footer, c.stamp].filter(Boolean);
+      if (imgs.length === 0) { setReady(true); return; }
+      Promise.all(imgs.map((src: string) => new Promise<void>((res) => {
+        const img = new Image();
+        img.onload = () => res();
+        img.onerror = () => res();
+        img.src = src;
+      }))).then(() => setReady(true));
     });
   }, [id]);
 
   useEffect(() => {
-    if (order) setTimeout(() => window.print(), 500);
-  }, [order]);
+    if (ready) setTimeout(() => window.print(), 500);
+  }, [ready]);
 
-  if (!order) return <div style={{ textAlign: "center", padding: 40 }}>جاري التحميل...</div>;
+  if (!ready) return <div style={{ textAlign: "center", padding: 40 }}>جاري التحميل...</div>;
 
   const style = `
     html, body { background-color: white !important; background: white !important; }

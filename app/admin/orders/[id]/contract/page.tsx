@@ -34,9 +34,20 @@ interface Company { header?: string; footer?: string; nameAr?: string; currencyA
 export default function ContractPage() {
   const { id } = useParams<{ id: string }>();
   const [data, setData] = useState<{ order: Order; company: Company } | null>(null);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/admin/orders/${id}/invoice`).then((r) => r.json()).then(setData);
+    fetch(`/api/admin/orders/${id}/invoice`).then((r) => r.json()).then((d) => {
+      setData(d);
+      const imgs = [d.company?.header, d.company?.footer, d.company?.stamp].filter(Boolean);
+      if (imgs.length === 0) { setReady(true); return; }
+      Promise.all(imgs.map((src: string) => new Promise<void>((res) => {
+        const img = new Image();
+        img.onload = () => res();
+        img.onerror = () => res();
+        img.src = src;
+      }))).then(() => setReady(true));
+    });
   }, [id]);
 
   useEffect(() => {
@@ -45,10 +56,10 @@ export default function ContractPage() {
   }, []);
 
   useEffect(() => {
-    if (data) setTimeout(() => window.print(), 500);
-  }, [data]);
+    if (ready) setTimeout(() => window.print(), 500);
+  }, [ready]);
 
-  if (!data) return <div style={{ textAlign: "center", padding: 40 }}>جاري التحميل...</div>;
+  if (!ready) return <div style={{ textAlign: "center", padding: 40 }}>جاري التحميل...</div>;
 
   const { order, company } = data;
   const currency = company.currencyAr || "ريال";
