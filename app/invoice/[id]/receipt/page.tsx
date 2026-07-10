@@ -34,7 +34,7 @@ export default function ReceiptPage() {
   const [data, setData] = useState<ReceiptData | null>(null);
 
   useEffect(() => {
-    fetch(`/api/admin/orders/${id}/invoice`).then((r) => r.json()).then((d) => setData(d));
+    fetch(`/api/invoice/${id}`).then((r) => r.json()).then((d) => setData(d));
   }, [id]);
 
   useEffect(() => {
