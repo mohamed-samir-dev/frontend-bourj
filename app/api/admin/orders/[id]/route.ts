@@ -14,13 +14,23 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   return NextResponse.json(await safeJson(res), { status: res.status });
 }
 
+function buildHeaders(req: NextRequest): Record<string, string> {
+  const csrf = req.headers.get("x-csrf-token") || "";
+  let cookie = req.headers.get("cookie") || "";
+  // Ensure csrf_token cookie is present for double-submit pattern
+  if (csrf && !cookie.includes("csrf_token=")) {
+    cookie = cookie ? `${cookie}; csrf_token=${csrf}` : `csrf_token=${csrf}`;
+  }
+  const headers: Record<string, string> = { cookie };
+  if (csrf) headers["x-csrf-token"] = csrf;
+  return headers;
+}
+
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const body = await req.json();
   const endpoint = body.financials ? "financials" : "status";
-  const headers: Record<string, string> = { "Content-Type": "application/json", cookie: req.headers.get("cookie") || "" };
-  const csrf = req.headers.get("x-csrf-token");
-  if (csrf) headers["x-csrf-token"] = csrf;
+  const headers = { ...buildHeaders(req), "Content-Type": "application/json" };
   const res = await fetch(`${getBackend()}/api/checkout/${id}/${endpoint}`, {
     method: "PUT",
     headers,
@@ -31,12 +41,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const headers: Record<string, string> = { cookie: req.headers.get("cookie") || "" };
-  const csrf = req.headers.get("x-csrf-token");
-  if (csrf) headers["x-csrf-token"] = csrf;
   const res = await fetch(`${getBackend()}/api/checkout/${id}`, {
     method: "DELETE",
-    headers,
+    headers: buildHeaders(req),
   });
   return NextResponse.json(await safeJson(res), { status: res.status });
 }
