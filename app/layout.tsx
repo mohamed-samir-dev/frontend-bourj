@@ -18,8 +18,8 @@ async function getCompany() {
 export async function generateMetadata(): Promise<Metadata> {
   const c = await getCompany();
 
-  const siteName = c.nameAr || "برج المبدع للتقنية";
-  const description = c.details || "برج المبدع للتقنية - أجهزة إلكترونية بالأقساط داخل المملكة العربية السعودية. أفضل الأسعار على الجوالات، اللابتوبات، الأجهزة اللوحية والإكسسوارات.";
+  const siteName = c.nameAr || "برج المبدع ";
+  const description = c.details || "برج المبدع  - أجهزة إلكترونية بالأقساط داخل المملكة العربية السعودية. أفضل الأسعار على الجوالات، اللابتوبات، الأجهزة اللوحية والإكسسوارات.";
 
   const logoUrl = c.logo
     ? (c.logo.startsWith("http") ? c.logo : `${SITE_URL}/api/tabarak${c.logo}`)
@@ -35,7 +35,7 @@ export async function generateMetadata(): Promise<Metadata> {
     keywords: [
       siteName,
       c.nameEn || "Burj Al-Mubdia Tech",
-      "برج المبدع", "برج المبدع للتقنية", "أقساط", "جوالات", "لابتوب", "أجهزة إلكترونية",
+      "برج المبدع", "برج المبدع ", "أقساط", "جوالات", "لابتوب", "أجهزة إلكترونية",
       "سامسونج", "آبل", "أيفون", "شاومي",
       "السعودية", "الرياض", "جدة",
     ],

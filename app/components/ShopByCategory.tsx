@@ -73,17 +73,14 @@ export default async function ShopByCategory() {
   }));
 
   return (
-    <div className="w-full px-3 sm:px-6 py-4" dir="rtl">
-    <section className="max-w-6xl mx-auto rounded-2xl py-10 shadow-md overflow-hidden bg-white" dir="rtl">
-      <div className="px-3 sm:px-4">
+    <div className="w-full px-3 sm:px-6 py-6" dir="rtl">
+      <section className="max-w-6xl mx-auto">
         <div className="flex items-center gap-3 mb-5">
-          <div className="flex-1 h-px bg-[#A842E4]" />
-          <h2 className="text-lg sm:text-xl font-bold text-[#7A2FCC] whitespace-nowrap">تسوق حسب الأقسام</h2>
-          <div className="flex-1 h-px bg-[#A842E4]" />
+          <div className="w-10 h-1 rounded-full bg-gradient-to-r from-[#A842E4] to-[#7A2FCC]" />
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 whitespace-nowrap">تسوق حسب الأقسام</h2>
         </div>
         <CategorySlider categories={categoriesWithHref} />
-      </div>
-    </section>
+      </section>
     </div>
   );
 }
