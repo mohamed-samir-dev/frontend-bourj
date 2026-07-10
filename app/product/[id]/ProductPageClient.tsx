@@ -51,26 +51,25 @@ export default function ProductPageClient({ id, initialProduct }: { id: string; 
 
   return (
     <main className="min-h-screen product-page-bg" dir="rtl">
-      {/* Floating Nav */}
-      <div className="fixed top-4 right-4 left-4 z-50 flex items-center justify-between">
-        <motion.button
-          onClick={() => router.back()}
-          whileTap={{ scale: 0.9 }}
-          className="w-11 h-11 rounded-full bg-white/90 backdrop-blur-xl shadow-lg shadow-[#8543C0]/10 flex items-center justify-center cursor-pointer border border-[#8543C0]/10"
-        >
-          <IoArrowForward size={20} className="text-[#611FA0]" />
-        </motion.button>
-        <motion.button
-          onClick={handleShare}
-          whileTap={{ scale: 0.9 }}
-          className="w-11 h-11 rounded-full bg-white/90 backdrop-blur-xl shadow-lg shadow-[#8543C0]/10 flex items-center justify-center cursor-pointer border border-[#8543C0]/10"
-        >
-          <IoShareSocialOutline size={20} className="text-[#611FA0]" />
-        </motion.button>
-      </div>
-
       {/* Hero Section - Full width image */}
       <section className="relative">
+        {/* Nav buttons inside hero */}
+        <div className="absolute top-4 right-4 left-4 z-20 flex items-center justify-between">
+          <motion.button
+            onClick={() => router.back()}
+            whileTap={{ scale: 0.9 }}
+            className="w-11 h-11 rounded-full bg-white/90 backdrop-blur-xl shadow-lg shadow-[#8543C0]/10 flex items-center justify-center cursor-pointer border border-[#8543C0]/10"
+          >
+            <IoArrowForward size={20} className="text-[#611FA0]" />
+          </motion.button>
+          <motion.button
+            onClick={handleShare}
+            whileTap={{ scale: 0.9 }}
+            className="w-11 h-11 rounded-full bg-white/90 backdrop-blur-xl shadow-lg shadow-[#8543C0]/10 flex items-center justify-center cursor-pointer border border-[#8543C0]/10"
+          >
+            <IoShareSocialOutline size={20} className="text-[#611FA0]" />
+          </motion.button>
+        </div>
         <ProductGallery images={allImages} name={product.name} discountPercent={product.discountPercent} />
       </section>
 
