@@ -7,9 +7,7 @@ import CategoryBanner from "../banner/CategoryBanner";
 
 const LIMIT = 4;
 
-// map category value → page path for "عرض الكل" link
 const categoryPageMap: Record<string, string> = {
-  // English keys
   smartphone: "/smartphones/apple-only",
   smartphones: "/smartphones/apple-only",
   watch: "/apple-watches/se",
@@ -30,7 +28,6 @@ const categoryPageMap: Record<string, string> = {
   microphone: "/games/microphones",
   figures: "/games/figures",
   rgb: "/games/rgb-lighting",
-  // Arabic category names from products
   "ابل ايفون 17 برو": "/smartphones/iphone-17-pro",
   "ابل ايفون 17 برو ماكس": "/smartphones/iphone-17-pro-max",
   "ابل ايفون 17برو ماكس": "/smartphones/iphone-17-pro-max",
@@ -82,7 +79,6 @@ function colorOrder(color: string, isOrangeFirst: boolean): number {
 
 function CategoryRow({ category, items, isFirst }: { category: string; items: Product[]; isFirst?: boolean }) {
   const isOrangeFirst = orangeFirstCategories.includes(category);
-  // build color rank: orange first (for specific categories), then alphabetical
   const colors = [...new Set(items.map((p) => p.color || ""))];
   colors.sort((a, b) => {
     const ao = colorOrder(a, isOrangeFirst), bo = colorOrder(b, isOrangeFirst);
@@ -90,7 +86,6 @@ function CategoryRow({ category, items, isFirst }: { category: string; items: Pr
     return a.localeCompare(b);
   });
   const colorRank = new Map(colors.map((c, i) => [c, i]));
-  // sort: storage ascending → color rank
   const visible = [...items].sort((a, b) => {
     const sa = parseStorage(a.storage), sb = parseStorage(b.storage);
     if (sa !== sb) return sa - sb;
@@ -99,26 +94,28 @@ function CategoryRow({ category, items, isFirst }: { category: string; items: Pr
   const href = categoryPageMap[category] ?? categoryPageMap[category.toLowerCase()] ?? `/search?q=${encodeURIComponent(category)}`;
 
   return (
-    <div className="mb-10">
-      <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6" dir="rtl">
-        <div className="flex-1 h-px bg-[#8543C0]/20" />
-        <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-[#7A2FCC] whitespace-nowrap px-2 sm:px-3">{category}</h2>
-        <div className="flex-1 h-px bg-[#8543C0]/20" />
+    <div className="mb-8 sm:mb-12">
+      {/* Category Header */}
+      <div className="flex items-center gap-3 mb-5 sm:mb-7" dir="rtl">
+        <div className="w-1 h-7 sm:h-8 rounded-full bg-gradient-to-b from-[#A842E4] to-[#611FA0]" />
+        <h2 className="text-base sm:text-lg md:text-xl font-black text-gray-900">{category}</h2>
+        <div className="flex-1 h-px bg-gradient-to-l from-transparent via-[#8543C0]/15 to-transparent" />
+        <Link
+          href={href}
+          className="text-[11px] sm:text-xs font-bold text-[#7A2FCC] hover:text-[#A842E4] transition-colors flex items-center gap-1"
+        >
+          عرض الكل
+          <svg className="w-3.5 h-3.5 rtl:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </Link>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+
+      {/* Products Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
         {visible.map((p, i) => (
           <ProductCard key={p._id} product={p} priority={isFirst && i === 0} />
         ))}
-      </div>
-      <div className="flex items-center gap-3 mt-6" dir="rtl">
-        <div className="flex-1 h-px bg-[#8543C0]/15" />
-        <Link
-          href={href}
-          className="text-xs sm:text-sm font-semibold text-white whitespace-nowrap px-5 py-2 rounded-full bg-gradient-to-r from-[#7A2FCC] to-[#8543C0] hover:from-[#8543C0] hover:to-[#A842E4] shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
-        >
-          عرض الكل
-        </Link>
-        <div className="flex-1 h-px bg-[#8543C0]/15" />
       </div>
     </div>
   );
@@ -141,7 +138,6 @@ export default function ProductGrid() {
       .then(([prods, config]) => {
         setProducts(prods);
         setHomeConfig(Array.isArray(config) ? { settings: config, max: 4 } : config);
-        // Fetch all category banners in one bulk call
         const cats = [...new Set((prods as Product[]).map((p) => p.category).filter(Boolean))];
         if (cats.length) {
           fetch(`/api/admin/category-banners-bulk?categories=${encodeURIComponent(cats.join(","))}`)
@@ -163,7 +159,6 @@ export default function ProductGrid() {
     return map;
   }, [products]);
 
-  // If no settings configured yet, show all. Otherwise filter & sort by settings.
   const orderedCategories = useMemo(() => {
     const allCats = Object.keys(grouped).filter((c) => c !== "أخرى");
     if (!homeConfig) return allCats;
@@ -176,29 +171,28 @@ export default function ProductGrid() {
       .map((s) => s.category)
       .filter((c, idx, arr) => arr.indexOf(c) === idx)
       .filter((c) => allCats.includes(c));
-    // الكاتيجوريز الجديدة اللي ما عندها setting تظهر في الآخر
     const unconfigured = allCats.filter((c) => !settings.some((s) => s.category === c) && c !== "أخرى");
     return [...orderedCats, ...unconfigured];
   }, [grouped, homeConfig]);
 
   if (loading) return (
-    <section className="w-full max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
+    <section className="w-full max-w-6xl mx-auto px-3 sm:px-4 py-8 sm:py-12">
       {[1, 2, 3].map((g) => (
-        <div key={g} className="mb-10">
+        <div key={g} className="mb-12">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex-1 h-px bg-[#8543C0]/15" />
-            <div className="h-6 w-32 bg-[#8543C0]/10 animate-pulse rounded" />
-            <div className="flex-1 h-px bg-[#8543C0]/15" />
+            <div className="w-1 h-7 rounded-full bg-purple-200 animate-pulse" />
+            <div className="h-5 w-36 bg-purple-100 animate-pulse rounded-lg" />
+            <div className="flex-1" />
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="bg-white/60 backdrop-blur-sm rounded-xl shadow-md border border-white/60 overflow-hidden">
-                <div className="w-full aspect-square bg-[#f3eafc]/50 animate-pulse" />
-                <div className="p-3 space-y-2">
-                  <div className="h-4 bg-[#f3eafc]/60 animate-pulse rounded w-3/4" />
-                  <div className="h-4 bg-[#f3eafc]/60 animate-pulse rounded w-1/2" />
+              <div key={i} className="bg-white rounded-3xl overflow-hidden border border-gray-100">
+                <div className="w-full aspect-square bg-gradient-to-b from-gray-50 to-white animate-pulse" />
+                <div className="p-3.5 space-y-2.5">
+                  <div className="h-3.5 bg-gray-100 animate-pulse rounded-full w-[80%]" />
+                  <div className="h-3 bg-gray-100 animate-pulse rounded-full w-[55%]" />
+                  <div className="h-10 bg-purple-50 animate-pulse rounded-xl mt-3" />
                 </div>
-                <div className="border-t border-white/40 h-12 bg-[#f3eafc]/30 animate-pulse" />
               </div>
             ))}
           </div>
@@ -206,20 +200,23 @@ export default function ProductGrid() {
       ))}
     </section>
   );
+
   if (!products.length) return <p className="text-center text-gray-400 py-10">لا توجد منتجات حالياً</p>;
 
   return (
-    <section className="w-full py-6 sm:py-8 overflow-hidden">
-    <div className="max-w-6xl mx-auto px-3 sm:px-4">
-      {orderedCategories.map((category, catIdx) => (
-        <div key={category}>
-          <div className="-mx-3 sm:-mx-4 mb-4 sm:mb-6 border-t border-[#8543C0]/10 pt-4 sm:pt-6">
-            <CategoryBanner category={category} images={bannerMap[category]} />
+    <section className="w-full py-8 sm:py-12 overflow-hidden">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4">
+        {orderedCategories.map((category, catIdx) => (
+          <div key={category}>
+            {bannerMap[category] && (
+              <div className="-mx-3 sm:-mx-4 mb-5 sm:mb-7">
+                <CategoryBanner category={category} images={bannerMap[category]} />
+              </div>
+            )}
+            <CategoryRow category={category} items={grouped[category]} isFirst={catIdx === 0} />
           </div>
-          <CategoryRow category={category} items={grouped[category]} isFirst={catIdx === 0} />
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
     </section>
   );
 }

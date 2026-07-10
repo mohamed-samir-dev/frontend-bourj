@@ -2,12 +2,59 @@ export interface SlugConfig {
   label: string;
   parentLabel: string;
   parentHref: string;
+  heroImage?: string;
   filters: {
     brand?: string;
     category?: string;
     nameIncludes?: string[];
   };
 }
+
+export const categoryHeroImages: Record<string, string> = {
+  // Smartphones
+  "iphone-13-pro-max": "/i17p.webp",
+  "iphone-14-pro-max": "/i17.webp",
+  "iphone-14-pro": "/heroes/iphone-14-pro.webp",
+  "iphone-14-plus": "/heroes/iphone-14-plus.webp",
+  "iphone-14": "/heroes/iphone-14.webp",
+  "iphone-15-pro-max": "/heroes/iphone-15-pro-max.webp",
+  "iphone-15-pro": "/heroes/iphone-15-pro.webp",
+  "iphone-15-plus": "/heroes/iphone-15-plus.webp",
+  "iphone-15": "/heroes/iphone-15.webp",
+  "iphone-16-pro-max": "/heroes/iphone-16-pro-max.webp",
+  "iphone-16-pro": "/heroes/iphone-16-pro.webp",
+  "iphone-16-plus": "/heroes/iphone-16-plus.webp",
+  "iphone-16": "/heroes/iphone-16.webp",
+  "iphone-17-pro-max": "/i17p.webp",
+  "iphone-17-pro": "/i17.webp",
+  "iphone-17": "/heroes/iphone-17.webp",
+  "iphone-17-air": "/heroes/iphone-17-air.webp",
+  "samsung-s22-ultra": "/heroes/samsung-s22-ultra.webp",
+  "samsung-s23-ultra": "/heroes/samsung-s23-ultra.webp",
+  "samsung-s24-ultra": "/heroes/samsung-s24-ultra.webp",
+  "samsung-s25": "/heroes/samsung-s25.webp",
+  "samsung-s25-ultra": "/heroes/samsung-s25-ultra.webp",
+  "samsung-galaxy-s26-ultra": "/heroes/samsung-galaxy-s26-ultra.webp",
+  "samsung-galaxy-s26-plus": "/heroes/samsung-galaxy-s26-plus.webp",
+  // Apple Watches
+  se: "/heroes/apple-watch.webp",
+  "smart-watches": "/heroes/smart-watches.webp",
+  // Audio
+  "airpods-pro": "/heroes/airpods-pro.webp",
+  "airpods-max": "/heroes/airpods-max.webp",
+  "samsung-buds": "/heroes/samsung-buds.webp",
+  // PlayStation
+  ps5: "/heroes/ps5.webp",
+  "ps5-slim": "/heroes/ps4.webp",
+  "xbox-one": "/heroes/xbox.webp",
+  controllers: "/heroes/controllers.webp",
+  // Laptops
+  "macbook-pro": "/heroes/macbook-pro.webp",
+  "macbook-air": "/heroes/macbook-air.webp",
+  // Tablets
+  "ipad-pro": "/heroes/ipad-pro.webp",
+  "ipad-air": "/heroes/ipad-air.webp",
+};
 
 export const slugConfigs: Record<string, SlugConfig> = {
   // ─── Smartphones ───────────────────────────────────────────
