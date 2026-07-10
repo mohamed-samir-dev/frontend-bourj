@@ -1,9 +1,14 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoPersonOutline, IoCardOutline, IoCallOutline, IoLocationOutline, IoCalendarOutline, IoWalletOutline, IoChevronDown, IoCashOutline, IoLayersOutline } from "react-icons/io5";
 import type { CustomerInfo } from "../../store/cartStore";
+
+const SAR = ({ className = "inline-block w-4 h-4" }: { className?: string }) => (
+  <Image src="/money-icon.webp" alt="ر.س" width={30} height={30} className={className} />
+);
 
 const fmt = (n: number) => n.toLocaleString("en-US");
 
@@ -183,7 +188,7 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
                 <div className="relative">
                   <select value={String(downPaymentExtra)} onChange={(e) => setDownPaymentExtra(Number(e.target.value))} className={selectClass}>
                     {DOWN_PAYMENT_OPTIONS.map((v) => (<option key={v} value={v - minDownPayment}>{fmt(v)} ر.س</option>))}
-                    <option value={total - minDownPayment}>الدفع بالكامل ({fmt(total)} ر.س)</option>
+                    <option value={total - minDownPayment}>الدفع بالكامل ({fmt(total)} ر.س )</option>
                   </select>
                   <IoChevronDown size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                 </div>
@@ -196,7 +201,7 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
                   <p className="text-xs text-white/50 font-bold mb-1">القسط الشهري</p>
                   <div className="flex items-baseline gap-1.5">
                     <span className="text-3xl font-extrabold text-white">{fmt(monthlyPayment)}</span>
-                    <span className="text-sm font-medium text-white/40">ر.س / شهر</span>
+                    <span className="text-sm font-medium text-white/40"><SAR className="inline-block w-4 h-4" /> / شهر</span>
                   </div>
                 </div>
               </div>
@@ -218,7 +223,7 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
                           <tr key={row.index} className={`${i % 2 === 0 ? "bg-white" : "bg-[#f9f5ff]/50"} hover:bg-[#8543C0]/[0.03] transition-colors`}>
                             <td className="py-2.5 px-3 text-gray-400 font-bold text-xs">{row.index}</td>
                             <td className="py-2.5 px-3 text-gray-600 text-xs">{row.date}</td>
-                            <td className="py-2.5 px-3 font-bold text-[#7A2FCC] text-xs">{fmt(row.amount)} ر.س</td>
+                            <td className="py-2.5 px-3 font-bold text-[#7A2FCC] text-xs">{fmt(row.amount)} <SAR className="inline-block w-3 h-3" /></td>
                           </tr>
                         ))}
                       </tbody>
@@ -236,7 +241,7 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
                   <p className="text-xs text-white/60 font-bold mb-1">المبلغ المطلوب</p>
                   <div className="flex items-baseline justify-center gap-1.5">
                     <span className="text-3xl font-extrabold text-white">{fmt(total)}</span>
-                    <span className="text-sm font-medium text-white/50">ر.س</span>
+                    <span className="text-sm font-medium text-white/50"><SAR className="inline-block w-4 h-4" /></span>
                   </div>
                 </div>
               </div>

