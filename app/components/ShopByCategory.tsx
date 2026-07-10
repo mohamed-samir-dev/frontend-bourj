@@ -73,14 +73,24 @@ export default async function ShopByCategory() {
   }));
 
   return (
-    <div className="w-full px-3 sm:px-6 py-6" dir="rtl">
-      <section className="max-w-6xl mx-auto">
-        <div className="flex items-center gap-3 mb-5">
-          <div className="w-10 h-1 rounded-full bg-gradient-to-r from-[#A842E4] to-[#7A2FCC]" />
-          <h2 className="text-lg sm:text-xl font-bold text-gray-900 whitespace-nowrap">تسوق حسب الأقسام</h2>
+    <div className="w-full py-8" dir="rtl">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 mb-5">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#A842E4] to-[#611FA0] flex items-center justify-center shadow-lg shadow-purple-300/30">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+              </svg>
+            </div>
+            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-[#A842E4] to-[#611FA0] opacity-20 blur-md" />
+          </div>
+          <div>
+            <h2 className="text-lg sm:text-xl font-extrabold text-gray-900">تسوق حسب الأقسام</h2>
+            <p className="text-[11px] text-gray-400 font-medium">اكتشف منتجاتنا المتنوعة</p>
+          </div>
         </div>
-        <CategorySlider categories={categoriesWithHref} />
-      </section>
+      </div>
+      <CategorySlider categories={categoriesWithHref} />
     </div>
   );
 }

@@ -1,121 +1,87 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
-import { motion } from "framer-motion";
-import { IoChevronBack, IoChevronForward } from "react-icons/io5";
+import { useState } from "react";
 
 type Category = { name: string; count: number; image: string; href: string };
 
 export default function CategorySlider({ categories }: { categories: Category[] }) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-
-  const checkScroll = () => {
-    const el = scrollRef.current;
-    if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 10);
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 10);
-  };
-
-  const scroll = (dir: "left" | "right") => {
-    const el = scrollRef.current;
-    if (!el) return;
-    el.scrollBy({ left: dir === "left" ? -280 : 280, behavior: "smooth" });
-  };
-
-  const colors = [
-    { bg: "from-violet-500 to-purple-600", light: "bg-violet-50", ring: "ring-violet-200" },
-    { bg: "from-rose-500 to-pink-600", light: "bg-rose-50", ring: "ring-rose-200" },
-    { bg: "from-sky-500 to-blue-600", light: "bg-sky-50", ring: "ring-sky-200" },
-    { bg: "from-amber-500 to-orange-600", light: "bg-amber-50", ring: "ring-amber-200" },
-    { bg: "from-emerald-500 to-teal-600", light: "bg-emerald-50", ring: "ring-emerald-200" },
-    { bg: "from-fuchsia-500 to-purple-600", light: "bg-fuchsia-50", ring: "ring-fuchsia-200" },
-    { bg: "from-indigo-500 to-blue-600", light: "bg-indigo-50", ring: "ring-indigo-200" },
-    { bg: "from-red-500 to-rose-600", light: "bg-red-50", ring: "ring-red-200" },
-  ];
+  const [hovered, setHovered] = useState<number | null>(null);
+  const [paused, setPaused] = useState(false);
 
   return (
-    <div className="relative">
-      {/* Navigation Arrows */}
-      {canScrollLeft && (
-        <button
-          onClick={() => scroll("left")}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-lg border border-gray-100 flex items-center justify-center text-[#7A2FCC] hover:bg-[#7A2FCC] hover:text-white transition-all duration-200 -translate-x-1/2"
-        >
-          <IoChevronBack size={20} />
-        </button>
-      )}
-      {canScrollRight && (
-        <button
-          onClick={() => scroll("right")}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-lg border border-gray-100 flex items-center justify-center text-[#7A2FCC] hover:bg-[#7A2FCC] hover:text-white transition-all duration-200 translate-x-1/2"
-        >
-          <IoChevronForward size={20} />
-        </button>
-      )}
-
-      {/* Scrollable Container */}
+    <div
+      className="relative w-full overflow-hidden"
+      dir="rtl"
+      style={{
+        maskImage: "linear-gradient(to left, transparent 0%, black 4%, black 96%, transparent 100%)",
+        WebkitMaskImage: "linear-gradient(to left, transparent 0%, black 4%, black 96%, transparent 100%)",
+      }}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
       <div
-        ref={scrollRef}
-        onScroll={checkScroll}
-        className="flex gap-4 overflow-x-auto scrollbar-hide py-4 px-2"
-        dir="ltr"
+        className="flex gap-3 w-max animate-scroll-rtl"
+        style={{ animationPlayState: paused ? "paused" : "running" }}
       >
-        {categories.map((cat, i) => {
-          const color = colors[i % colors.length];
+        {[...categories, ...categories, ...categories].map((cat, i) => {
+          const isHovered = hovered === i;
           return (
-            <motion.div
-              key={cat.name}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: i * 0.04, duration: 0.35 }}
-              className="shrink-0"
+            <div
+              key={`${cat.name}-${i}`}
+              onMouseEnter={() => setHovered(i)}
+              onMouseLeave={() => setHovered(null)}
+              className="relative shrink-0"
             >
               <Link
                 href={cat.href}
-                className="group relative w-[130px] sm:w-[150px] h-[170px] sm:h-[190px] flex flex-col items-center justify-center gap-3 rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
+                className={`relative flex flex-col items-center gap-2 py-4 px-4 sm:py-5 sm:px-5 rounded-2xl border transition-all duration-300 w-[130px] sm:w-[150px] ${isHovered ? "bg-white border-[#A842E4]/30 shadow-[0_12px_40px_rgba(133,67,192,0.15)] -translate-y-2 scale-[1.03] z-10" : "bg-white/80 border-gray-100/80 shadow-[0_2px_8px_rgba(0,0,0,0.04)]"}`}
               >
-                {/* Background gradient */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${color.bg} opacity-[0.07] group-hover:opacity-[0.12] transition-opacity duration-300`} />
-                <div className="absolute inset-0 bg-white/80 backdrop-blur-sm border border-gray-100 rounded-3xl group-hover:border-[#A842E4]/30 transition-colors duration-300" />
-
-                {/* Decorative corner */}
-                <div className={`absolute -top-6 -right-6 w-16 h-16 rounded-full bg-gradient-to-br ${color.bg} opacity-20 group-hover:opacity-40 group-hover:scale-125 transition-all duration-500`} />
+                {/* Top gradient line */}
+                <div className={`absolute top-0 left-1/2 -translate-x-1/2 h-[3px] rounded-b-full bg-gradient-to-r from-[#A842E4] to-[#7A2FCC] transition-all duration-300 ${isHovered ? "w-3/4 opacity-100" : "w-0 opacity-0"}`} />
 
                 {/* Image */}
-                <div className={`relative z-10 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl ${color.light} ring-1 ${color.ring} overflow-hidden flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg transition-all duration-300`}>
+                <div className={`relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden transition-all duration-300 ${isHovered ? "bg-gradient-to-br from-[#f3eafc] to-[#e8ddf5] shadow-md shadow-purple-100" : "bg-gray-50"}`}>
                   {cat.image ? (
                     <Image
                       src={cat.image}
                       alt={cat.name}
                       fill
                       unoptimized
-                      className="object-contain p-2.5"
-                      sizes="80px"
+                      className={`object-contain p-2 transition-transform duration-300 ${isHovered ? "scale-110" : ""}`}
+                      sizes="64px"
                     />
                   ) : (
-                    <span className="text-2xl">🛍️</span>
+                    <span className="flex items-center justify-center w-full h-full text-2xl">🛍️</span>
                   )}
                 </div>
 
                 {/* Name */}
-                <p className="relative z-10 text-[11px] sm:text-xs font-bold text-gray-700 text-center leading-tight line-clamp-2 px-2 group-hover:text-[#7A2FCC] transition-colors duration-200" dir="rtl">
+                <span className={`text-[11px] sm:text-xs font-bold text-center leading-tight line-clamp-2 transition-colors duration-200 ${isHovered ? "text-[#7A2FCC]" : "text-gray-700"}`}>
                   {cat.name}
-                </p>
+                </span>
 
-                {/* Count pill */}
+                {/* Count badge */}
                 {cat.count > 0 && (
-                  <span className={`relative z-10 text-[9px] sm:text-[10px] font-bold text-white px-2.5 py-0.5 rounded-full bg-gradient-to-r ${color.bg} shadow-sm`}>
+                  <span className={`text-[9px] font-semibold px-2 py-0.5 rounded-full transition-all duration-300 ${isHovered ? "bg-[#7A2FCC] text-white" : "bg-gray-100 text-gray-500"}`}>
                     {cat.count} منتج
                   </span>
                 )}
               </Link>
-            </motion.div>
+            </div>
           );
         })}
       </div>
+
+      <style jsx>{`
+        @keyframes scroll-rtl {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(33.333%); }
+        }
+        .animate-scroll-rtl {
+          animation: scroll-rtl 70s linear infinite;
+        }
+      `}</style>
     </div>
   );
 }

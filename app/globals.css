@@ -44,6 +44,14 @@ body.checkout-page {
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.group:hover .group-hover\:animate-spin-slow {
+  animation: spin-slow 4s linear infinite;
+}
+
 .scrollbar-visible::-webkit-scrollbar { height: 6px; }
 .scrollbar-visible::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
 .scrollbar-visible::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
