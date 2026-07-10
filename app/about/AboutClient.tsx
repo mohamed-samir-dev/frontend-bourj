@@ -2,8 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import ContactSection from "../components/ContactSection";
 
-/* ── Intersection Observer hook ── */
-function useInView(threshold = 0.12) {
+function useInView(threshold = 0.1) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -19,235 +18,211 @@ function useInView(threshold = 0.12) {
   return { ref, visible };
 }
 
-function FadeUp({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
+function Reveal({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
   const { ref, visible } = useInView();
   return (
     <div ref={ref} className={className} style={{
       opacity: visible ? 1 : 0,
-      transform: visible ? "translateY(0) scale(1)" : "translateY(28px) scale(0.98)",
-      transition: `opacity 0.65s cubic-bezier(.22,1,.36,1) ${delay}ms, transform 0.65s cubic-bezier(.22,1,.36,1) ${delay}ms`,
+      transform: visible ? "translateY(0) rotate(0deg)" : "translateY(40px) rotate(0.5deg)",
+      transition: `all 0.8s cubic-bezier(.16,1,.3,1) ${delay}ms`,
     }}>
       {children}
     </div>
   );
 }
 
-/* ── SVG Icons ── */
-const IconShield = () => (
-  <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" stroke="currentColor" strokeWidth={1.8}>
-    <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
-const IconHeadset = () => (
-  <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" stroke="currentColor" strokeWidth={1.8}>
-    <path d="M3 18v-6a9 9 0 0118 0v6" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3v5zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3v5z" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
-const IconPercent = () => (
-  <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" stroke="currentColor" strokeWidth={1.8}>
-    <line x1="19" y1="5" x2="5" y2="19" strokeLinecap="round"/>
-    <circle cx="6.5" cy="6.5" r="2.5"/>
-    <circle cx="17.5" cy="17.5" r="2.5"/>
-  </svg>
-);
-const IconTruck = () => (
-  <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" stroke="currentColor" strokeWidth={1.8}>
-    <rect x="1" y="3" width="15" height="13" rx="1" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M16 8h4l3 5v4h-7V8z" strokeLinecap="round" strokeLinejoin="round"/>
-    <circle cx="5.5" cy="18.5" r="2.5"/>
-    <circle cx="18.5" cy="18.5" r="2.5"/>
-  </svg>
-);
-const IconStore = () => (
-  <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" stroke="currentColor" strokeWidth={1.8}>
-    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M9 22V12h6v10" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
-const IconTarget = () => (
-  <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" stroke="currentColor" strokeWidth={1.8}>
-    <circle cx="12" cy="12" r="10"/>
-    <circle cx="12" cy="12" r="6"/>
-    <circle cx="12" cy="12" r="2"/>
-  </svg>
-);
-const IconStar = () => (
-  <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7" stroke="currentColor" strokeWidth={1.8}>
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
-
 /* ── Data ── */
-const stats = [
-  { value: "١٠٠٪", label: "ضمان الجودة",  Icon: IconShield,  gradient: "from-[#0F4C6E] to-[#1F6F8B]",  ring: "ring-[#B8D8EC]",  text: "text-[#0F4C6E]"  },
-  { value: "٢٤/٧",  label: "دعم فني",      Icon: IconHeadset, gradient: "from-[#0a3550] to-[#0F4C6E]",  ring: "ring-[#B8D8EC]",  text: "text-[#0a3550]"  },
-  { value: "٠٪",    label: "بدون فوائد",   Icon: IconPercent, gradient: "from-[#7CC043] to-[#5a9030]",  ring: "ring-[#d4edba]",  text: "text-[#5a9030]"  },
-  { value: "سريع",  label: "توصيل",        Icon: IconTruck,   gradient: "from-[#1F6F8B] to-[#0a3550]",  ring: "ring-[#B8D8EC]",  text: "text-[#1F6F8B]"  },
+const features = [
+  { icon: "🛡️", value: "١٠٠٪", label: "ضمان الجودة", color: "from-[#0F4C6E] to-[#1F6F8B]" },
+  { icon: "🎧", value: "٢٤/٧", label: "دعم فني متواصل", color: "from-[#1F6F8B] to-[#0a3550]" },
+  { icon: "💳", value: "٠٪", label: "بدون فوائد", color: "from-[#7CC043] to-[#5a9030]" },
+  { icon: "🚀", value: "سريع", label: "توصيل فوري", color: "from-[#0a3550] to-[#0F4C6E]" },
 ];
 
-const sections = [
+const timeline = [
   {
-    Icon: IconStore,
     title: "من نحن",
-    gradient: "from-[#0F4C6E] to-[#1F6F8B]",
-    bg: "bg-[#E6F2F8]",
-    iconText: "text-[#0F4C6E]",
-    content: [
+    paragraphs: [
       "مؤسسة تبارك التقنية الذكية هي متجر إلكتروني متخصص في تقديم المنتجات والخدمات بجودة عالية وتجربة شراء سهلة وآمنة تناسب احتياجات العملاء.",
-      "نحن نحرص على توفير أفضل الحلول والعروض مع الاهتمام بالتفاصيل التي تمنح العميل تجربة احترافية بداية من تصفح المنتجات وحتى إتمام الطلب.",
-      " مؤسسة تبارك التقنية الذكية هي اختيارك الأول لشراء أحدث الأجهزة الإلكترونية بأقساط سهلة وبدون فوائد، وتلقى عندنا تجربة مختلفة تبدأ من جودة الخدمة وسرعة التوصيل إلى اهتمام كبير بخدمة ما بعد البيع — نتابعك خطوة بخطوة ونوفّر لك دعم فني وضمان يخليك واثق إنك تتعامل مع متجر يحط رضاك فوق كل اعتبار.",
+      "نحرص على توفير أفضل الحلول والعروض مع الاهتمام بالتفاصيل التي تمنح العميل تجربة احترافية بداية من تصفح المنتجات وحتى إتمام الطلب.",
+      "اختيارك الأول لشراء أحدث الأجهزة الإلكترونية بأقساط سهلة وبدون فوائد، مع دعم فني وضمان يخليك واثق إنك تتعامل مع متجر يحط رضاك فوق كل اعتبار.",
     ],
   },
   {
-    Icon: IconTarget,
     title: "رؤيتنا",
-    gradient: "from-[#0a3550] to-[#0F4C6E]",
-    bg: "bg-[#ddeef7]",
-    iconText: "text-[#0a3550]",
-    content: [
+    paragraphs: [
       "تقديم تجربة تسوق إلكترونية موثوقة وسريعة ومريحة، مع الحفاظ على أعلى معايير الجودة وخدمة العملاء.",
     ],
   },
   {
-    Icon: IconStar,
     title: "رسالتنا",
-    gradient: "from-[#7CC043] to-[#5a9030]",
-    bg: "bg-[#eaf5d8]",
-    iconText: "text-[#5a9030]",
-    content: [
+    paragraphs: [
       "نسعى إلى بناء ثقة طويلة الأمد مع عملائنا من خلال منتجات مميزة، دعم سريع، وشفافية كاملة في التعامل.",
     ],
   },
 ];
 
-
-
-/* ── Component ── */
 export default function AboutClient() {
-  const [heroVisible, setHeroVisible] = useState(false);
+  const [heroReady, setHeroReady] = useState(false);
   const [company, setCompany] = useState<{ whatsapp?: string; email?: string; addressAr?: string } | null>(null);
 
-  useEffect(() => { const t = setTimeout(() => setHeroVisible(true), 60); return () => clearTimeout(t); }, []);
+  useEffect(() => { setTimeout(() => setHeroReady(true), 80); }, []);
   useEffect(() => {
-    fetch("/api/admin/company")
-      .then((r) => r.json())
-      .then((d) => setCompany(d))
-      .catch(() => {});
+    fetch("/api/admin/company").then(r => r.json()).then(d => setCompany(d)).catch(() => {});
   }, []);
 
-  const anim = (delay: number, extra = "") =>
-    ({
-      style: {
-        opacity: heroVisible ? 1 : 0,
-        transform: heroVisible ? "translateY(0)" : "translateY(22px)",
-        transition: `opacity 0.7s cubic-bezier(.22,1,.36,1) ${delay}ms, transform 0.7s cubic-bezier(.22,1,.36,1) ${delay}ms`,
-      },
-      className: extra,
-    } as React.HTMLAttributes<HTMLElement>);
-
   return (
-    <main className="min-h-screen bg-[#E6F2F8] overflow-x-hidden" dir="rtl">
+    <main className="min-h-screen bg-[#f0f7fb] overflow-x-hidden" dir="rtl">
 
       {/* ════════ HERO ════════ */}
-      <section className="relative w-full overflow-hidden" style={{ background: 'linear-gradient(to bottom left, #0a3550, #0F4C6E, #1F6F8B)' }}>
+      <section className="relative min-h-[420px] sm:min-h-[500px] flex items-center justify-center overflow-hidden">
+        {/* Animated gradient background */}
+        <div className="absolute inset-0" style={{ background: "conic-gradient(from 220deg at 70% 30%, #0a3550, #0F4C6E, #1F6F8B, #0F4C6E, #0a3550)" }} />
 
-        {/* floating blobs */}
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full bg-white/5 blur-[80px]" />
-          <div className="absolute top-10 left-10 w-64 h-64 rounded-full bg-indigo-300/10 blur-[60px]" />
-          <div className="absolute bottom-0 left-1/2 w-[600px] h-40 -translate-x-1/2 bg-blue-900/30 blur-[50px]" />
+        {/* Geometric shapes */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute top-[10%] right-[5%] w-72 h-72 border border-white/10 rounded-full" style={{ animation: "spin 25s linear infinite" }} />
+          <div className="absolute bottom-[15%] left-[8%] w-48 h-48 border border-white/[0.07] rounded-full" style={{ animation: "spin 18s linear infinite reverse" }} />
+          <div className="absolute top-[40%] left-[20%] w-3 h-3 bg-[#7CC043] rounded-full opacity-60" style={{ animation: "pulse 2s ease-in-out infinite" }} />
+          <div className="absolute top-[25%] right-[30%] w-2 h-2 bg-[#B8D8EC] rounded-full opacity-50" style={{ animation: "pulse 3s ease-in-out infinite 0.5s" }} />
+          <div className="absolute bottom-[30%] right-[15%] w-4 h-4 bg-[#7CC043]/40 rounded-full blur-sm" style={{ animation: "pulse 2.5s ease-in-out infinite 1s" }} />
+          {/* Diagonal lines */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 1px, transparent 30px)" }} />
         </div>
 
-        {/* grid pattern overlay */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.04]"
-          style={{ backgroundImage: "linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)", backgroundSize: "40px 40px" }}
-        />
-
-        <div className="relative w-full px-5 sm:px-12 lg:px-20 py-20 sm:py-32 text-center text-white">
-          <div {...anim(100)} className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 text-xs sm:text-sm font-medium text-[#B8D8EC] mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#7CC043] animate-pulse" />
-            تعرف علينا
+        {/* Content */}
+        <div className="relative z-10 text-center px-6 py-20">
+          <div style={{ opacity: heroReady ? 1 : 0, transform: heroReady ? "scale(1)" : "scale(0.9)", transition: "all 0.9s cubic-bezier(.16,1,.3,1) 100ms" }}>
+            <div className="inline-flex items-center gap-2 bg-white/[0.08] backdrop-blur-md border border-white/20 rounded-full px-5 py-2 text-sm text-[#B8D8EC] mb-8">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7CC043] opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#7CC043]" />
+              </span>
+              تعرّف علينا
+            </div>
           </div>
 
-          <h1 {...anim(220)} className="text-3xl sm:text-5xl lg:text-6xl font-extrabold mb-4 sm:mb-5 leading-tight tracking-tight">
-            مؤسسة تبارك
-            <span className="block text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(to left, #B8D8EC, #ffffff)' }}>
-              التقنية الذكية
+          <h1 style={{ opacity: heroReady ? 1 : 0, transform: heroReady ? "translateY(0)" : "translateY(30px)", transition: "all 0.9s cubic-bezier(.16,1,.3,1) 250ms" }}
+            className="text-4xl sm:text-5xl lg:text-7xl font-black text-white mb-5 leading-[1.15]">
+            مؤسسة{" "}
+            <span className="relative inline-block">
+              <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-l from-[#B8D8EC] via-white to-[#7CC043]">تبارك</span>
             </span>
+            <br />
+            <span className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#B8D8EC]/80">التقنية الذكية</span>
           </h1>
 
-          <p {...anim(360)} className="text-[#B8D8EC]/90 text-base sm:text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed">
-            تعرف على نشاط المتجر ورؤيتنا والخدمات التي نقدمها لعملائنا
+          <p style={{ opacity: heroReady ? 1 : 0, transform: heroReady ? "translateY(0)" : "translateY(20px)", transition: "all 0.8s cubic-bezier(.16,1,.3,1) 450ms" }}
+            className="text-[#B8D8EC]/80 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
+            نقدّم لك تجربة تسوّق إلكترونية فريدة بأعلى معايير الجودة والثقة
           </p>
         </div>
 
-        {/* wave divider */}
+        {/* Bottom curve */}
         <div className="absolute bottom-0 left-0 w-full">
-          <svg viewBox="0 0 1440 70" className="w-full h-12 sm:h-16" preserveAspectRatio="none">
-            <path d="M0,35 C240,70 480,0 720,35 C960,70 1200,0 1440,35 L1440,70 L0,70 Z" fill="#E6F2F8" />
+          <svg viewBox="0 0 1440 80" className="w-full h-14 sm:h-20" preserveAspectRatio="none">
+            <path d="M0,60 C360,0 1080,80 1440,20 L1440,80 L0,80 Z" fill="#f0f7fb" />
           </svg>
         </div>
       </section>
 
-      {/* ════════ STATS ════════ */}
-      <section className="w-full max-w-4xl mx-auto px-4 sm:px-8 lg:px-10 pt-8 sm:pt-10 pb-4">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          {stats.map((s, i) => (
-            <FadeUp key={s.label} delay={i * 90}>
-              <div className="group relative bg-white rounded-2xl border border-[#B8D8EC] shadow-sm p-3 sm:p-5 text-center overflow-hidden hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300">
-                <div className={`absolute top-0 left-0 w-full h-1 bg-linear-to-l ${s.gradient}`} />
-                <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-linear-to-br ${s.gradient} flex items-center justify-center mx-auto mb-2 sm:mb-3 text-white shadow-md group-hover:scale-110 transition-transform duration-300`}>
-                  <s.Icon />
+      {/* ════════ STATS STRIP ════════ */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-8 -mt-6 sm:-mt-8 relative z-20">
+        <Reveal>
+          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl shadow-[#0F4C6E]/5 border border-[#B8D8EC]/30 p-4 sm:p-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+              {features.map((f, i) => (
+                <div key={f.label} className="group text-center p-3 sm:p-4 rounded-xl hover:bg-[#f0f7fb] transition-colors duration-300" style={{ transitionDelay: `${i * 50}ms` }}>
+                  <div className={`w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 rounded-2xl bg-gradient-to-br ${f.color} flex items-center justify-center text-2xl sm:text-3xl shadow-lg group-hover:scale-110 group-hover:-rotate-3 transition-all duration-300`}>
+                    {f.icon}
+                  </div>
+                  <p className="text-xl sm:text-2xl font-black text-[#0a3550]">{f.value}</p>
+                  <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5">{f.label}</p>
                 </div>
-                <p className={`text-xl sm:text-2xl font-extrabold ${s.text} mb-0.5`}>{s.value}</p>
-                <p className="text-[11px] sm:text-xs text-gray-500 font-semibold tracking-wide">{s.label}</p>
-              </div>
-            </FadeUp>
-          ))}
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ════════ TIMELINE SECTIONS ════════ */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-8 py-16 sm:py-20">
+        <div className="relative">
+          {/* Vertical line */}
+          <div className="absolute top-0 bottom-0 right-6 sm:right-8 w-[2px] bg-gradient-to-b from-[#0F4C6E] via-[#1F6F8B] to-[#7CC043] rounded-full opacity-20" />
+
+          <div className="space-y-10 sm:space-y-14">
+            {timeline.map((item, i) => (
+              <Reveal key={item.title} delay={i * 120}>
+                <div className="relative flex gap-4 sm:gap-6">
+                  {/* Timeline dot */}
+                  <div className="relative z-10 shrink-0">
+                    <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br ${i === 0 ? "from-[#0F4C6E] to-[#1F6F8B]" : i === 1 ? "from-[#1F6F8B] to-[#0a3550]" : "from-[#7CC043] to-[#5a9030]"} flex items-center justify-center shadow-lg`}>
+                      <span className="text-white text-lg sm:text-2xl font-black">{i === 0 ? "🏢" : i === 1 ? "🎯" : "⭐"}</span>
+                    </div>
+                  </div>
+
+                  {/* Content card */}
+                  <div className="flex-1 bg-white rounded-2xl sm:rounded-3xl border border-[#B8D8EC]/30 shadow-sm hover:shadow-lg hover:shadow-[#0F4C6E]/5 transition-all duration-500 overflow-hidden">
+                    <div className={`h-1 w-full bg-gradient-to-l ${i === 0 ? "from-[#0F4C6E] to-[#1F6F8B]" : i === 1 ? "from-[#1F6F8B] to-[#0a3550]" : "from-[#7CC043] to-[#5a9030]"}`} />
+                    <div className="p-5 sm:p-7">
+                      <h2 className="text-lg sm:text-2xl font-black text-[#0a3550] mb-3 sm:mb-4">{item.title}</h2>
+                      <div className="space-y-3">
+                        {item.paragraphs.map((p, j) => (
+                          <p key={j} className="text-gray-600 leading-[1.9] text-sm sm:text-base">{p}</p>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ════════ SECTIONS ════════ */}
-      <section className="w-full max-w-4xl mx-auto px-4 sm:px-8 lg:px-10 py-8 sm:py-10 space-y-4 sm:space-y-5">
-        {sections.map((s, i) => (
-          <FadeUp key={s.title} delay={i * 100}>
-            <div className="group bg-white rounded-2xl sm:rounded-3xl border border-[#B8D8EC] shadow-sm overflow-hidden hover:shadow-md transition-all duration-300">
-              <div className="flex flex-col sm:flex-row">
-                <div className={`w-full h-1.5 sm:w-1.5 sm:h-auto bg-linear-to-r sm:bg-linear-to-b ${s.gradient} shrink-0`} />
-                <div className="flex-1 p-4 sm:p-7">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl ${s.bg} ${s.iconText} flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300`}>
-                      <s.Icon />
-                    </div>
-                    <div>
-                      <h2 className="text-base sm:text-xl font-extrabold text-gray-800">{s.title}</h2>
-                      <div className={`h-0.5 w-8 mt-1 rounded-full bg-linear-to-l ${s.gradient}`} />
-                    </div>
+      {/* ════════ WHY US BANNER ════════ */}
+      <Reveal>
+        <section className="max-w-5xl mx-auto px-4 sm:px-8 pb-12">
+          <div className="relative rounded-3xl overflow-hidden" style={{ background: "linear-gradient(135deg, #0a3550 0%, #0F4C6E 50%, #1F6F8B 100%)" }}>
+            <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)", backgroundSize: "24px 24px" }} />
+            <div className="relative p-8 sm:p-12 text-center">
+              <h3 className="text-2xl sm:text-3xl font-black text-white mb-3">لماذا تختارنا؟</h3>
+              <p className="text-[#B8D8EC]/80 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed mb-8">
+                نجمع بين الجودة والسعر المناسب مع خدمة عملاء استثنائية تجعل تجربتك معنا لا تُنسى
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {[
+                  { emoji: "✅", text: "منتجات أصلية ١٠٠٪" },
+                  { emoji: "📦", text: "شحن سريع لجميع المناطق" },
+                  { emoji: "💬", text: "دعم فني على مدار الساعة" },
+                ].map((item) => (
+                  <div key={item.text} className="flex items-center gap-3 bg-white/[0.06] backdrop-blur-sm border border-white/10 rounded-xl p-4 text-white text-sm sm:text-base">
+                    <span className="text-xl">{item.emoji}</span>
+                    <span className="font-medium">{item.text}</span>
                   </div>
-                  <div className="space-y-2">
-                    {s.content.map((p, j) => (
-                      <p key={j} className="text-gray-600 leading-relaxed text-sm sm:text-base">{p}</p>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
-          </FadeUp>
-        ))}
+          </div>
+        </section>
+      </Reveal>
 
+      {/* ════════ CONTACT ════════ */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-8 pb-16">
         <ContactSection
           title="وسائل التواصل"
           phone={company?.whatsapp}
           whatsapp={company?.whatsapp}
           email={company?.email}
-          fadeDelay={300}
+          fadeDelay={200}
         />
       </section>
 
-      <div className="h-16" />
+      {/* CSS Keyframes */}
+      <style jsx global>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      `}</style>
     </main>
   );
 }
