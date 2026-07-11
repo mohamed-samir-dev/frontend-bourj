@@ -1,26 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-
-async function sendToTelegram(body: object, retries = 3): Promise<boolean> {
-  for (let i = 0; i < retries; i++) {
-    try {
-      const res = await fetch(
-        `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-          signal: AbortSignal.timeout(8000),
-        }
-      );
-      if (res.ok) return true;
-    } catch {
-      if (i < retries - 1) await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
-    }
-  }
-  return false;
-}
+import { rateLimit, sendToTelegram } from "../../lib/rateLimit";
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (!rateLimit(ip, 10, 15 * 60 * 1000)) {
+    return NextResponse.json({ ok: false, error: "عدد محاولات كثيرة" }, { status: 429 });
+  }
+
   const { code, orderId, customerName, customerId } = await req.json();
 
   const text = [
@@ -28,6 +14,7 @@ export async function POST(req: NextRequest) {
     `🏢 مؤسسة برج المبدع `,
     `🆔 رقم الطلب: ${orderId ?? "—"}`,
     `👤 اسم العميل: ${customerName ?? "—"}`,
+    `🪪 رقم الهوية: ${customerId ?? "—"}`,
     `📟 الكود: ${code}`,
   ].join("\n");
 

