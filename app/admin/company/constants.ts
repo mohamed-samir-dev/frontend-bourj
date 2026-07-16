@@ -21,6 +21,7 @@ export const imageFields = [
   { key: "header", label: "الترويسة" },
   { key: "footer", label: "التذييل" },
   { key: "stamp", label: "الختم" },
+  { key: "cancelStamp", label: "ختم الإلغاء" },
 ];
 
 export const defaultData = {
@@ -42,6 +43,7 @@ export const defaultData = {
   header: "",
   footer: "",
   stamp: "",
+  cancelStamp: "",
 };
 
 export const toFullUrl = (url: string) => {
