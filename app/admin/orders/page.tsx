@@ -163,6 +163,12 @@ export default function OrdersPage() {
                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
                         عقد التقسيط
                       </button>
+                      {o.status === "cancelled" && (
+                        <button onClick={() => window.open(`/admin/orders/${o._id}/cancellation`, "_blank")} className="inline-flex items-center gap-1 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold px-2 py-1 rounded-lg transition-colors whitespace-nowrap">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                          فاتورة إلغاء
+                        </button>
+                      )}
                       {(() => {
                         const next = o.status === "pending" ? "confirmed" : o.status === "confirmed" ? "cancelled" : "pending";
                         const cfg = { pending: { label: "تحويل لـ مؤكد", bg: "bg-green-500 hover:bg-green-600" }, confirmed: { label: "تحويل لـ ملغي", bg: "bg-red-500 hover:bg-red-600" }, cancelled: { label: "تحويل لـ انتظار", bg: "bg-yellow-400 hover:bg-yellow-500" } };

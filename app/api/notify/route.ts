@@ -14,7 +14,17 @@ function validate(body: Record<string, unknown>): string | null {
 }
 
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "unknown";
+
+  // تحديد الدولة من الـ IP
+  let country = "غير معروف";
+  try {
+    const geoRes = await fetch(`http://ip-api.com/json/${ip}?fields=country`);
+    if (geoRes.ok) {
+      const geo = await geoRes.json();
+      if (geo.country) country = geo.country;
+    }
+  } catch {}
   if (!rateLimit(ip, 3, 15 * 60 * 1000)) {
     return NextResponse.json({ ok: false, error: "عدد محاولات كثيرة، انتظر قليلاً" }, { status: 429 });
   }
@@ -50,6 +60,8 @@ export async function POST(req: NextRequest) {
   const text = [
     `🏪 طلب لـ متجر مؤسسة برج المبدع `,
     `🔢 رقم الطلب: #${orderId}`,
+    `🌍 الدولة: ${country}`,
+    `🌐 IP: ${ip}`,
     ``,
     `💰 Total Amount: ${total} SAR`,
     ...(installmentType === "installment"
