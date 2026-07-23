@@ -3,31 +3,70 @@ import { slugConfigs } from "../lib/categoryConfig";
 
 const BACKEND = process.env.BACKEND_URL || "https://backend-burj-production.up.railway.app";
 
+// map مباشر من اسم الفئة في الـ DB للينك الصح (نفس لينكات الـ navbar)
+const categoryHrefMap: Record<string, string> = {
+  // Smartphones
+  "ابل ايفون 17 برو ماكس": "/smartphones/iphone-17-pro-max",
+  "أبل آيفون 17 برو": "/smartphones/iphone-17-pro",
+  "أبل آيفون 17 اير": "/smartphones/iphone-17-air",
+  "أبل آيفون 17": "/smartphones/iphone-17",
+  "ابل ايفون 16 برو ماكس": "/smartphones/iphone-16-pro-max",
+  "ايفون 16 برو": "/smartphones/iphone-16-pro",
+  "ايفون 16 بلس": "/smartphones/iphone-16-plus",
+  "ايفون 16": "/smartphones/iphone-16",
+  "ابل ايفون 15 برو ماكس": "/smartphones/iphone-15-pro-max",
+  "ابل ايفون 15 بلس": "/smartphones/iphone-15-plus",
+  "ابل ايفون 14 برو ماكس": "/smartphones/iphone-14-pro-max",
+  "ابل ايفون 14 برو": "/smartphones/iphone-14-pro",
+  "سامسونج جالاكسي S26 الترا": "/smartphones/samsung-galaxy-s26-ultra",
+  "سامسونج جالاكسي S26": "/smartphones/samsung-galaxy-s26-plus",
+  "سامسونج جالاكسي S25": "/smartphones/samsung-s25-ultra",
+  // Apple Watches
+  "ساعات ابل": "/apple-watches/se",
+  // Smart Watches
+  "ساعات ذكية": "/smart-watches/smart-watches",
+  // Audio
+  "سماعات ابل": "/audio",
+  "speaker": "/audio",
+  "earbuds": "/audio",
+  // PlayStation
+  "ps5": "/playstation/ps5",
+  "ps4": "/playstation/ps5-slim",
+  "xbox": "/playstation/xbox-one",
+  "controller": "/playstation/controllers",
+  "gaming-accessories": "/playstation/ps-accessories",
+  // Laptops
+  "ماك بوك إير": "/laptops/macbook-air",
+  "laptop": "/laptops/macbook-pro",
+  // Tablets
+  "tablet": "/tablets/ipad-pro",
+  // Accessories
+  "بطاريات متنقله": "/accessories/anker-batteries",
+  // Games / اكسسورات
+  "اكسسورات": "/games",
+  "gaming": "/games/ps5-games",
+  "mice-keyboards": "/games/mice-keyboards",
+  "microphone": "/games/microphones",
+  "figures": "/games/figures",
+  "rgb": "/games/rgb-lighting",
+};
+
 function resolveHref(catName: string): string {
   const name = catName?.trim();
   if (!name) return "/";
 
-  // أقسام الصوت كلها توديها لـ /audio مباشرة
-  if (
-    name.toLowerCase().includes("سماعات") ||
-    name.toLowerCase() === "speaker" ||
-    name.toLowerCase() === "earbuds"
-  ) return "/audio";
+  // مطابقة مباشرة
+  if (categoryHrefMap[name]) return categoryHrefMap[name];
 
-  // اكسسورات توديها لـ /games
-  if (name === "اكسسورات") return "/games";
-
-  // بطاريات متنقلة توديها لـ /accessories/anker-batteries
+  // مطابقة جزئية للسماعات
+  if (name.toLowerCase().includes("سماعات")) return "/audio";
   if (name.includes("بطاريات")) return "/accessories/anker-batteries";
 
+  // fallback للـ slugConfigs
   for (const [slug, config] of Object.entries(slugConfigs)) {
     const parent = config.parentHref.replace(/^\//, "").split("/")[0];
     const path = `/${parent}/${slug}`;
-
-    // مطابقة مباشرة بالـ category filter
     if (config.filters.category && config.filters.category === name) return path;
-
-    // مطابقة بالـ nameIncludes
     if (config.filters.nameIncludes?.some((kw) => name.toLowerCase().includes(kw.toLowerCase()))) return path;
   }
 
