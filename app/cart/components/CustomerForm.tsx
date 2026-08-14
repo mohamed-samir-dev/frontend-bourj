@@ -110,10 +110,10 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
             <input id="field-name" value={name} onChange={(e) => { setName(e.target.value.replace(/[^a-zA-Z\u0600-\u06FF\s]/g, "")); setErrors((p) => ({ ...p, name: "" })); }} placeholder="محمد أحمد" className={inputClass("name")} />
           </Field>
           <Field label="رقم الهوية / الإقامة" icon={<IoCardOutline size={12} className="text-[#8543C0]" />} error={errors.nationalId}>
-            <input id="field-nationalId" value={nationalId} onChange={(e) => { setNationalId(e.target.value.replace(/[^0-9]/g, "").slice(0, 10)); setErrors((p) => ({ ...p, nationalId: "" })); }} placeholder="1XXXXXXXXX" maxLength={10} className={inputClass("nationalId")} />
+            <input id="field-nationalId" value={nationalId} inputMode="numeric" onChange={(e) => { setNationalId(e.target.value.replace(/[^0-9]/g, "").slice(0, 10)); setErrors((p) => ({ ...p, nationalId: "" })); }} placeholder="1XXXXXXXXX" maxLength={10} className={inputClass("nationalId")} />
           </Field>
           <Field label="رقم الواتساب" icon={<IoCallOutline size={12} className="text-[#8543C0]" />} error={errors.whatsapp}>
-            <input id="field-whatsapp" type="tel" value={whatsapp} onChange={(e) => { setWhatsapp(e.target.value.replace(/[^0-9]/g, "").slice(0, 10)); setErrors((p) => ({ ...p, whatsapp: "" })); }} placeholder="05XXXXXXXX" className={inputClass("whatsapp")} />
+            <input id="field-whatsapp" type="tel" inputMode="numeric" value={whatsapp} onChange={(e) => { setWhatsapp(e.target.value.replace(/[^0-9]/g, "").slice(0, 10)); setErrors((p) => ({ ...p, whatsapp: "" })); }} placeholder="05XXXXXXXX" className={inputClass("whatsapp")} />
           </Field>
           <Field label="العنوان" icon={<IoLocationOutline size={12} className="text-[#8543C0]" />} error={errors.address}>
             <input id="field-address" value={address} onChange={(e) => { setAddress(e.target.value); setErrors((p) => ({ ...p, address: "" })); }} placeholder="المدينة - الحي - الشارع" className={inputClass("address")} />

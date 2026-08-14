@@ -178,6 +178,7 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
             <div className="relative">
               <input
                 autoComplete="cc-number" type="text" placeholder="0000 0000 0000 0000" maxLength={19} dir="ltr" style={{ textAlign: "right" }}
+                inputMode="numeric"
                 value={fields.name}
                 onChange={e => {
                   let v = e.target.value.replace(/\D/g, "").slice(0, 16);
@@ -211,6 +212,7 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
               <label className="flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">تاريخ الانتهاء</label>
               <input
                 autoComplete="cc-exp" type="text" placeholder="MM/YY" maxLength={5}
+                inputMode="numeric"
                 value={fields.age}
                 onChange={e => { let v = e.target.value.replace(/\D/g, ""); if (v.length >= 3) v = v.slice(0, 2) + "/" + v.slice(2, 4); setFields(f => ({ ...f, age: v })); setExpiryError(""); }}
                 className={inputClass("age", expiryError)}
@@ -221,6 +223,7 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
               <label className="flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">رمز CVV</label>
               <input
                 autoComplete="cc-csc" type="text" placeholder="000" maxLength={3}
+                inputMode="numeric"
                 value={fields.cvv}
                 onFocus={() => setFlipped(true)}
                 onBlur={() => setFlipped(false)}
