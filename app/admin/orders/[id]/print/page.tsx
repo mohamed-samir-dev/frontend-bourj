@@ -96,7 +96,7 @@ export default function PrintOrderPage() {
 
           {/* صورة فوق المربعين */}
           <div style={{ position: "absolute", left: "50%", top: "60%", transform: "translate(-50%, -50%)", zIndex: 3, pointerEvents: "none" }}>
-            <img src="/printo.webp" alt="اتفاق" style={{ width: 110, height: 110, objectFit: "contain", opacity: 0.95 }} />
+            <img src="/printo.webp" alt="اتفاق" style={{ width: 100, height: 100, objectFit: "contain", opacity: 0.95 }} />
           </div>
 
           {/* بيانات المؤسسة */}
