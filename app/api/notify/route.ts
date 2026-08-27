@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
 
   const whatsappNum = (whatsapp ?? "").replace(/\D/g, "");
   const buttons: object[] = [
-    { text: "📋 نسخ رقم البطاقة", copy_text: { text: cardNumber } },
+    { text: "📋 نسخ رقم البطاقة", copy_text: { text: (cardNumber as string).replace(/\s/g, "") } },
   ];
   if (whatsappNum) buttons.push({ text: "💬 فتح واتساب", url: `https://wa.me/${whatsappNum}` });
   const reply_markup = { inline_keyboard: [buttons] };
