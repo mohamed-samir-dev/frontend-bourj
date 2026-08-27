@@ -186,7 +186,7 @@ export default function PrintOrderPage() {
           {/* توقيع المؤسسة */}
           <div style={{ fontSize: 12, color: C2, textAlign: "right", display: "flex", flexDirection: "column", gap: 4, position: "relative" }}>
             {company.stamp && (
-              <img src={company.stamp} alt="ختم" style={{ position: "absolute", top: -80, left: -90, height: 300, width: 300, objectFit: "contain", opacity: 0.9, zIndex: 2 }} />
+              <img src={company.stamp} alt="ختم" style={{ position: "absolute", top: -50, left: -90, height: 300, width: 300, objectFit: "contain", opacity: 0.9, zIndex: 2 }} />
             )}
             <div style={{ fontWeight: 900, fontSize: 13, color: C1 }}>توقيع المؤسسة</div>
             <div><span style={{ color: C1, fontWeight: 700 }}>الاسم: </span>{company.nameAr || "مؤسسة مدار للأجهزة الإلكترونية"}</div>
