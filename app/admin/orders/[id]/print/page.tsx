@@ -43,9 +43,6 @@ export default function PrintOrderPage() {
   const C1 = "#680DCA", C2 = "#180362", C4 = "#9653D2";
 
   const rows: [string, string, React.ReactNode][] = [
-    ["نوع الجهاز",          order.items[0]?.name ?? "—",                                                                                         <Smartphone key="نوع الجهاز" size={19} color={C4} />],
-    ["موديل الجهاز",        order.items[0]?.name ?? "—",                                                                                         <Package key="موديل الجهاز" size={19} color={C4} />],
-    ["السعة / اللون",       [order.items[0]?.storage, order.items[0]?.color].filter(Boolean).join(" / ") || "—",                                 <Palette key="السعة / اللون" size={19} color={C4} />],
     ["سعر الجهاز الإجمالي", `${order.total.toLocaleString("ar-SA")} ريال`,                                                                       <CircleDollarSign key="سعر الجهاز الإجمالي" size={19} color={C4} />],
     ["الدفعة المقدمة",      `${order.downPayment.toLocaleString("ar-SA")} ريال`,                                                                  <HandCoins key="الدفعة المقدمة" size={19} color={C4} />],
     ["المبلغ المتبقي",      `${(order.total - order.downPayment).toLocaleString("ar-SA")} ريال`,                                                  <Calculator key="المبلغ المتبقي" size={19} color={C4} />],
@@ -125,13 +122,27 @@ export default function PrintOrderPage() {
               <div style={{ fontWeight: 900, fontSize: 13, color: "white", background: `linear-gradient(135deg, ${C1}, ${C2})`, borderRadius: 20, padding: "4px 18px" }}>تفاصيل العقد</div>
             </div>
             <div style={{ fontSize: 12, color: C2, lineHeight: 1.7 }}>
-              {rows.map(([label, val, icon], i) => (
-                <div key={label} style={{ display: "flex", justifyContent: i < 2 ? "flex-start" : "space-between", alignItems: "center", gap: i < 2 ? 6 : 0, borderBottom: `1px dashed #c4a8e8`, paddingBottom: 1, marginBottom: 2 }}>
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: C1, fontWeight: 700, whiteSpace: "nowrap", fontSize: i < 2 ? 11 : "inherit" }}>
-                    <span style={{ display: "inline-flex", transform: "scale(1.0)", transformOrigin: "center" }}>{icon}</span>
+              {order.items.map((item, i) => (
+                <div key={i} style={{ borderBottom: `1px dashed #c4a8e8`, paddingBottom: 2, marginBottom: 3 }}>
+                  <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center", gap: 6 }}>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: C1, fontWeight: 700, whiteSpace: "nowrap", fontSize: 11 }}><Smartphone size={19} color={C4} /> الجهاز {order.items.length > 1 ? i + 1 : ""}:</span>
+                    <span style={{ fontSize: 12, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.name}</span>
+                  </div>
+                  {(item.storage || item.color) && (
+                    <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center", gap: 6 }}>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: C1, fontWeight: 700, whiteSpace: "nowrap", fontSize: 11 }}><Palette size={19} color={C4} /> السعة / اللون:</span>
+                      <span style={{ fontSize: 12 }}>{[item.storage, item.color].filter(Boolean).join(" / ")}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+              {rows.map(([label, val, icon]) => (
+                <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: `1px dashed #c4a8e8`, paddingBottom: 1, marginBottom: 2 }}>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: C1, fontWeight: 700, whiteSpace: "nowrap" }}>
+                    <span style={{ display: "inline-flex" }}>{icon}</span>
                     {label}:
                   </span>
-                  <span style={{ fontSize: i < 2 ? 12 : "inherit", whiteSpace: i < 2 ? "nowrap" : "normal", overflow: i < 2 ? "hidden" : "visible", textOverflow: i < 2 ? "ellipsis" : "clip", wordBreak: i < 2 ? "normal" : "break-word" }}>{val}</span>
+                  <span>{val}</span>
                 </div>
               ))}
             </div>
