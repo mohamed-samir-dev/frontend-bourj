@@ -1,12 +1,10 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { IoPersonOutline, IoCardOutline, IoCallOutline, IoLocationOutline, IoCalendarOutline, IoWalletOutline, IoChevronDown, IoCashOutline, IoLayersOutline } from "react-icons/io5";
+import { IoPersonOutline, IoCardOutline, IoCallOutline, IoLocationOutline, IoCalendarOutline, IoWalletOutline, IoChevronDown } from "react-icons/io5";
 import type { CustomerInfo } from "../../store/cartStore";
-import { useCartStore } from "../../store/cartStore";
 
 const SAR = () => (
   <Image src="/money-icon.webp" alt="ر.س" width={27} height={27} className="inline-block w-[27px] h-[27px]" />
@@ -42,8 +40,6 @@ interface CustomerFormProps {
 }
 
 export default function CustomerForm({ total, itemCount, initialData, installmentMonths, onSubmit }: CustomerFormProps) {
-  const router = useRouter();
-  const { clear } = useCartStore();
   const maxMonths = installmentMonths ?? 24;
   const MONTHS_OPTIONS = Array.from({ length: maxMonths }, (_, i) => i + 1);
   const minDownPayment = 1000 * itemCount;
@@ -52,17 +48,15 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
   const [nationalId, setNationalId] = useState(initialData?.nationalId ?? "");
   const [whatsapp, setWhatsapp] = useState(initialData?.whatsapp ?? "");
   const [address, setAddress] = useState(initialData?.address ?? "");
-  const [installmentType, setInstallmentType] = useState<"full" | "installment">(initialData?.installmentType ?? "installment");
   const [months, setMonths] = useState(initialData?.months ?? maxMonths);
   const [downPaymentExtra, setDownPaymentExtra] = useState<number>(0);
   const downPayment = minDownPayment + downPaymentExtra;
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const monthlyPayment = useMemo(() => {
-    if (installmentType === "full") return 0;
     const remaining = total - downPayment;
     return remaining > 0 ? Math.ceil(remaining / months) : 0;
-  }, [total, months, installmentType, downPayment]);
+  }, [total, months, downPayment]);
 
   const schedule = useMemo(() => {
     const now = new Date();
@@ -81,8 +75,6 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
 
   const selectClass = "w-full rounded-xl px-4 py-3 text-sm font-bold text-gray-800 bg-[#f9f5ff]/50 border border-[#8543C0]/10 focus:outline-none focus:border-[#8543C0] focus:ring-2 focus:ring-[#8543C0]/10 focus:bg-white transition-all duration-200 cursor-pointer appearance-none";
 
-  const [showConfirm, setShowConfirm] = useState(false);
-
   const handleSubmit = () => {
     const newErrors: Record<string, string> = {};
     if (!name.trim()) newErrors.name = "مطلوب";
@@ -97,7 +89,7 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
       document.getElementById(`field-${firstError}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
-    setShowConfirm(true);
+    onSubmit({ name, nationalId, whatsapp, address, installmentType: "installment", months, downPayment });
   };
 
   return (
@@ -136,45 +128,7 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
           <h3 className="text-sm font-extrabold text-gray-800">طريقة الدفع</h3>
         </div>
 
-        {/* Payment Type Toggle */}
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            onClick={() => setInstallmentType("installment")}
-            className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 ${
-              installmentType === "installment"
-                ? "border-[#8543C0] bg-[#8543C0]/5 shadow-[0_0_0_1px_rgba(133,67,192,0.1)]"
-                : "border-gray-200 bg-white hover:border-[#8543C0]/30 hover:bg-[#f9f5ff]"
-            }`}
-          >
-            {installmentType === "installment" && (
-              <motion.div layoutId="paymentCheck" className="absolute -top-1.5 -left-1.5 w-5 h-5 bg-[#8543C0] rounded-full flex items-center justify-center">
-                <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </motion.div>
-            )}
-            <IoLayersOutline size={22} className={installmentType === "installment" ? "text-[#8543C0]" : "text-gray-400"} />
-            <span className={`text-xs font-bold ${installmentType === "installment" ? "text-[#8543C0]" : "text-gray-500"}`}>تقسيط</span>
-          </button>
-          <button
-            onClick={() => setInstallmentType("full")}
-            className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 ${
-              installmentType === "full"
-                ? "border-[#A842E4] bg-[#A842E4]/5 shadow-[0_0_0_1px_rgba(168,66,228,0.1)]"
-                : "border-gray-200 bg-white hover:border-[#A842E4]/30 hover:bg-[#f9f5ff]"
-            }`}
-          >
-            {installmentType === "full" && (
-              <motion.div layoutId="paymentCheck" className="absolute -top-1.5 -left-1.5 w-5 h-5 bg-[#A842E4] rounded-full flex items-center justify-center">
-                <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </motion.div>
-            )}
-            <IoCashOutline size={22} className={installmentType === "full" ? "text-[#A842E4]" : "text-gray-400"} />
-            <span className={`text-xs font-bold ${installmentType === "full" ? "text-[#A842E4]" : "text-gray-500"}`}>كاش كامل</span>
-          </button>
-        </div>
-
-        <AnimatePresence mode="wait">
-          {installmentType === "installment" ? (
-            <motion.div key="installment" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.25 }} className="space-y-4">
+        <div className="space-y-4">
               {/* Months Selector */}
               <Field label="عدد الأشهر" icon={<IoCalendarOutline size={12} className="text-[#8543C0]" />}>
                 <div className="relative">
@@ -237,23 +191,7 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
                   </div>
                 </div>
               )}
-            </motion.div>
-          ) : (
-            <motion.div key="full" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.25 }}>
-              <div className="relative overflow-hidden bg-gradient-to-br from-[#8543C0] via-[#A842E4] to-[#7A2FCC] rounded-xl p-5 text-center">
-                <div className="absolute top-0 right-0 w-28 h-28 bg-white/10 rounded-full translate-x-10 -translate-y-10" />
-                <div className="relative">
-                  <IoCashOutline size={28} className="text-white/70 mx-auto mb-2" />
-                  <p className="text-xs text-white/60 font-bold mb-1">المبلغ المطلوب</p>
-                  <div className="flex items-baseline justify-center gap-1.5">
-                    <span className="text-3xl font-extrabold text-white">{fmt(total)}</span>
-                    <span className="text-sm font-medium text-white/50"><SAR /></span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        </div>
       </div>
 
       {/* Submit Button */}
@@ -267,81 +205,7 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-[shimmer_2.5s_infinite]" />
       </motion.button>
 
-      {/* Confirm Popup */}
-      <AnimatePresence>
-        {showConfirm && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
-          >
-            <motion.div
-              initial={{ scale: 0.85, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.85, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 260, damping: 22 }}
-              className="relative w-full max-w-sm bg-white rounded-3xl overflow-hidden shadow-[0_30px_80px_rgba(133,67,192,0.3)]"
-            >
-              <div className="h-2 bg-gradient-to-r from-[#090D54] via-[#611FA0] to-[#A842E4]" />
-              <div className="p-6 space-y-4" dir="rtl">
-                {/* Icon */}
-                <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-[#8543C0]/10 to-[#A842E4]/20 flex items-center justify-center">
-                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#8543C0" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="12" r="9" stroke="#8543C0" strokeWidth="2"/></svg>
-                </div>
 
-                <div className="text-center">
-                  <h2 className="text-lg font-extrabold text-gray-800">تم استلام طلبك!</h2>
-                  <p className="text-sm text-gray-400 mt-1">سيتم التواصل معك على رقم الواتساب لتأكيد موعد التوصيل</p>
-                </div>
-
-                <div className="bg-gradient-to-br from-[#f9f5ff] to-[#f3eafc] rounded-2xl p-4 space-y-2.5">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-400 font-medium">الاسم</span>
-                    <span className="text-xs font-bold text-gray-700">{name}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-400 font-medium">واتساب</span>
-                    <span className="text-xs font-bold text-gray-700" dir="ltr">{whatsapp}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-400 font-medium">العنوان</span>
-                    <span className="text-xs font-bold text-gray-700 max-w-[160px] text-left truncate">{address}</span>
-                  </div>
-                  <div className="border-t border-[#8543C0]/10 pt-2.5 flex justify-between items-center">
-                    <span className="text-xs text-gray-400 font-medium">طريقة الدفع</span>
-                    <span className="text-xs font-bold text-[#8543C0]">الدفع عند الاستلام</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-400 font-medium">{installmentType === "installment" ? "الدفعة الأولى" : "المبلغ الإجمالي"}</span>
-                    <span className="text-sm font-extrabold text-[#A842E4]">{fmt(installmentType === "installment" ? downPayment : total)} ر.س</span>
-                  </div>
-                  {installmentType === "installment" && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-gray-400 font-medium">القسط الشهري</span>
-                      <span className="text-sm font-extrabold text-[#8543C0]">{fmt(monthlyPayment)} ر.س / شهر</span>
-                    </div>
-                  )}
-                </div>
-
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => {
-                    onSubmit({ name, nationalId, whatsapp, address, installmentType, months, downPayment });
-                    clear();
-                    setShowConfirm(false);
-                    router.push("/");
-                  }}
-                  className="w-full bg-gradient-to-r from-[#7A2FCC] via-[#8543C0] to-[#A842E4] text-white font-bold py-3.5 rounded-2xl text-sm shadow-[0_8px_24px_rgba(133,67,192,0.3)] hover:shadow-[0_12px_32px_rgba(133,67,192,0.4)] transition-shadow"
-                >
-                  حسناً، شكراً!
-                </motion.button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.div>
   );
 }

